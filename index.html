@@ -615,24 +615,32 @@ function logOut() {
         });
     }
 function janaStatistikDinamik() {
-    // 1. Dapatkan data daripada databaseSebenar atau localStorage
+    // 1. Dapatkan data
     let dataPenuh = (typeof databaseSebenar !== 'undefined' && databaseSebenar.length > 0) 
-                     ? databaseSebenar 
-                     : JSON.parse(localStorage.getItem('dataPSS') || '[]');
+                        ? databaseSebenar 
+                        : JSON.parse(localStorage.getItem('dataPSS') || '[]');
     
     let filteredData = [];
-    let targetHari = document.getElementById('filter-tarikh').value; 
+    let targetHari = document.getElementById('filter-tarikh').value; // Format: YYYY-MM-DD
     
     if (!targetHari) return;
 
-    // 2. Logik Penapisan (Harian vs Bulanan)
-    if (modAnalisaSemasa === 'hari') {
-        filteredData = dataPenuh.filter(item => item.tarikhTeks === targetHari);
-    } else {
-        let bulanDipilih = document.getElementById('filter-bulan').value;
-        let targetBulan = String(parseInt(bulanDipilih) + 1).padStart(2, '0'); 
-        filteredData = dataPenuh.filter(item => item.tarikhTeks && item.tarikhTeks.split('-')[1] === targetBulan);
-    }
+    // 2. Logik Penapisan yang Dibaiki (Sangat Penting!)
+    // Kita bersihkan tarikh supaya format DD-MM-YYYY (DB) dan YYYY-MM-DD (Input) boleh sepadan
+    filteredData = dataPenuh.filter(item => {
+        if (!item.tarikhTeks) return false;
+        
+        if (modAnalisaSemasa === 'hari') {
+            // Tukar YYYY-MM-DD kepada DD-MM-YYYY untuk disamakan dengan format database
+            let parts = targetHari.split('-'); 
+            let targetFormatDB = `${parts[2]}-${parts[1]}-${parts[0]}`;
+            return item.tarikhTeks === targetFormatDB || item.tarikhTeks === targetHari;
+        } else {
+            let bulanDipilih = document.getElementById('filter-bulan').value;
+            let targetBulan = String(parseInt(bulanDipilih) + 1).padStart(2, '0'); 
+            return item.tarikhTeks.split('-')[1] === targetBulan;
+        }
+    });
 
     // 3. Update Jumlah Statistik
     document.getElementById('stat-total').innerText = filteredData.length;
@@ -645,27 +653,21 @@ function janaStatistikDinamik() {
         "PdPc/Nilam": 0, "Lawatan": 0 
     };
     
-    filteredData.forEach(item => { 
-        if(kaunter.hasOwnProperty(item.sudut)) {
-            kaunter[item.sudut]++; 
-        }
-    });
-    
+    filteredData.forEach(item => { if(kaunter.hasOwnProperty(item.sudut)) kaunter[item.sudut]++; });
     let popular = Object.keys(kaunter).reduce((a, b) => kaunter[a] > kaunter[b] ? a : b);
     document.getElementById('stat-popular').innerText = filteredData.length > 0 ? popular : "Tiada Data";
 
     // 5. Update Carta Bar
     kemasKiniCartaBar(kaunter);
     
-    // 6. Update Jadual Analisa (Jadual bawah carta)
-   const tBody = document.getElementById('log-table-body');
+    // 6. Update Jadual Analisa (Menggunakan ID yang betul: log-table-body)
+    const tBody = document.getElementById('log-table-body');
     if (tBody) {
         if (filteredData.length === 0) {
-            console.log("Tiada data untuk tarikh/bulan ini.");
             tBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-zinc-500">Tiada rekod ditemui untuk tempoh ini.</td></tr>`;
         } else {
             tBody.innerHTML = filteredData.map(row => {
-                // Pastikan key 'kategori' wujud, kalau tak ada, anggap 'Murid'
+                // Logik Guru: Pastikan ia detect 'guru' walaupun huruf besar/kecil
                 let kategoriData = row.kategori ? row.kategori.toString().toLowerCase() : 'murid';
                 let isGuru = kategoriData.includes('guru');
                 
@@ -682,9 +684,8 @@ function janaStatistikDinamik() {
                         <td class="p-4 text-yellow-400">${row.sudut || '-'}</td>
                     </tr>`;
             }).join('');
+        }
     }
-
-    // 7. Kira Top Pengunjung (Statistik tambahan)
     kiraTopPengunjungDinamik(filteredData);
 }
 
