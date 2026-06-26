@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
+    <link rel="icon" href="https://i.imgur.com/rADfCvV.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Pusat Sumber SKBTH02</title>
@@ -522,24 +523,27 @@ function logOut() {
             let kiraLelaki = {}; let kiraPerempuan = {}; let kiraGuru = {}; 
             let infoPengguna = {}; let kiraKelas = {};
 
-            dataBulanIni.forEach(item => {
-                if(!item.nama) return;
-                let namaLower = item.nama.toLowerCase();
-                infoPengguna[item.nama] = item.kelas || "-";
-                if(item.kelas) {
-                kiraKelas[item.kelas] = (kiraKelas[item.kelas] || 0) + 1;
-                if (item.kategori === "Guru") {
-                    kiraGuru[item.nama] = (kiraGuru[item.nama] || 0) + 1;
-                } else {
-                    if (namaLower.includes('binti') || namaLower.includes('bte') || namaLower.includes('bt') || namaLower.includes('a/p')) {
-                        kiraPerempuan[item.nama] = (kiraPerempuan[item.nama] || 0) + 1;
-                    } else {
-                        kiraLelaki[item.nama] = (kiraLelaki[item.nama] || 0) + 1;
-                    }
-                }
+           dataBulanIni.forEach(item => {
+        if(!item.nama) return;
+        
+        infoPengguna[item.nama] = item.kelas || "-";
+        
+        // 1. KATEGORI GURU
+        if (item.kategori && item.kategori.toLowerCase() === "guru") {
+            kiraGuru[item.nama] = (kiraGuru[item.nama] || 0) + 1;
+        } 
+        // 2. KATEGORI MURID
+        else if (item.kelas) {
+            kiraKelas[item.kelas] = (kiraKelas[item.kelas] || 0) + 1;
+            
+            let namaLower = item.nama.toLowerCase();
+            if (namaLower.includes('binti') || namaLower.includes('bte') || namaLower.includes('bt') || namaLower.includes('a/p')) {
+                kiraPerempuan[item.nama] = (kiraPerempuan[item.nama] || 0) + 1;
+            } else {
+                kiraLelaki[item.nama] = (kiraLelaki[item.nama] || 0) + 1;
             }
-          });
-
+        }
+    });
             let topLelaki = Object.keys(kiraLelaki).reduce((a, b) => kiraLelaki[a] > kiraLelaki[b] ? a : b, null);
             document.getElementById('top-lelaki-nama').innerText = topLelaki || "Tiada Data";
             document.getElementById('top-lelaki-info').innerText = topLelaki ? `${infoPengguna[topLelaki]} • Kunjungan: ${kiraLelaki[topLelaki]} kali` : "-";
