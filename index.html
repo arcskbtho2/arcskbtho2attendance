@@ -611,74 +611,73 @@ function logOut() {
         });
     }
 function janaStatistikDinamik() {
-    let filteredData = [];
+    // 1. Dapatkan data daripada databaseSebenar atau localStorage
+    let dataPenuh = (typeof databaseSebenar !== 'undefined' && databaseSebenar.length > 0) 
+                     ? databaseSebenar 
+                     : JSON.parse(localStorage.getItem('dataPSS') || '[]');
     
-    // Pastikan tarikh wujud
+    let filteredData = [];
     let targetHari = document.getElementById('filter-tarikh').value; 
+    
     if (!targetHari) return;
 
+    // 2. Logik Penapisan (Harian vs Bulanan)
     if (modAnalisaSemasa === 'hari') {
-        // TUKAR: Jangan guna split-reverse jika format database cikgu adalah YYYY-MM-DD
-        // Jika database cikgu simpan tarikh dalam format DD-MM-YYYY, gunakan kod ini:
-        let komponen = targetHari.split('-');
-        let targetHariFormatSesuai = `${komponen[2]}-${komponen[1]}-${komponen[0]}`;
-        
-        filteredData = databaseSebenar.filter(item => {
-            // Log untuk debug (Cikgu boleh tekan F12 di browser untuk tengok console)
-            return item.tarikhTeks === targetHariFormatSesuai;
-        });
-        
-        // KALAU MASIH KOSONG, cuba format asal database:
-        if (filteredData.length === 0) {
-            filteredData = databaseSebenar.filter(item => item.tarikhTeks === targetHari);
-        }
+        filteredData = dataPenuh.filter(item => item.tarikhTeks === targetHari);
     } else {
-                let targetBulan = String(parseInt(document.getElementById('filter-bulan').value) + 1).padStart(2, '0'); 
-                filteredData = databaseSebenar.filter(item => item.tarikhTeks && item.tarikhTeks.split('-')[1] === targetBulan);
-                kiraTopPengunjungDinamik(filteredData);
-            }
+        let bulanDipilih = document.getElementById('filter-bulan').value;
+        let targetBulan = String(parseInt(bulanDipilih) + 1).padStart(2, '0'); 
+        filteredData = dataPenuh.filter(item => item.tarikhTeks && item.tarikhTeks.split('-')[1] === targetBulan);
+    }
 
-            let total = filteredData.length;
-            document.getElementById('stat-total').innerText = total;
+    // 3. Update Jumlah Statistik
+    document.getElementById('stat-total').innerText = filteredData.length;
 
-            let kaunter = { 
-    "Ruang Bacaan & Google TV": 0, 
-    "Ruang Permainan Dalaman": 0, 
-    "Red spot": 0, 
-    "DBHOSS NovaTech": 0, 
-    "Sudut Komik": 0, 
-    "Ruang Pameran": 0, 
-    "Studio TVPSS": 0, 
-    "Bilik Tayang": 0,
-    "PdPc/Nilam": 0,      // Tambah ini
-    "Lawatan": 0          // Tambah ini
-};
-            
-            filteredData.forEach(item => { if(kaunter[item.sudut] !== undefined) kaunter[item.sudut]++; });
-
-            let popular = Object.keys(kaunter).reduce((a, b) => kaunter[a] > kaunter[b] ? a : b);
-            document.getElementById('stat-popular').innerText = total > 0 ? popular : "Tiada Data";
-
-            kemasKiniCartaBar(kaunter);
-
-            const tBody = document.getElementById('log-table-body');
-            if(total === 0) {
-                tBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-zinc-500 text-xs">Belum ada imbasan direkodkan.</td></tr>`;
-            } else {
-               tBody.innerHTML = filteredData.map(row => {
-    let infoMasaPaparan = modAnalisaSemasa === 'hari' ? row.masa : row.tarikhTeks;
-    let warnaKategori = row.kategori === 'Guru' ? 'text-purple-400 border-purple-800' : 'text-blue-400 border-blue-800';
-    return `
-        <tr class="hover:bg-zinc-900/40 text-xs pdf-border-dark">
-            <td class="p-4 font-mono font-bold text-zinc-400 pdf-text-dark">${infoMasaPaparan}</td>
-            <td class="p-4"><span class="px-2 py-0.5 bg-zinc-950 border rounded text-[10px] uppercase font-bold ${warnaKategori}">${row.kategori || 'Murid'}</span></td>
-            <td class="p-4 font-bold text-white pdf-text-dark">${row.nama}</td>
-            <td class="p-4 text-zinc-300 pdf-text-dark">${row.kelas}</td>
-            <td class="p-4"><span class="px-2 py-1 bg-zinc-950 border border-zinc-800 rounded-md text-yellow-400 font-semibold pdf-border-dark pdf-text-dark">${row.sudut}</span></td>
-        </tr>`;
-}).join('');
-            }
+    // 4. Kira Sudut Popular
+    let kaunter = { 
+        "Ruang Bacaan & Google TV": 0, "Ruang Permainan Dalaman": 0, 
+        "Red spot": 0, "DBHOSS NovaTech": 0, "Sudut Komik": 0, 
+        "Ruang Pameran": 0, "Studio TVPSS": 0, "Bilik Tayang": 0,
+        "PdPc/Nilam": 0, "Lawatan": 0 
+    };
+    
+    filteredData.forEach(item => { 
+        if(kaunter.hasOwnProperty(item.sudut)) {
+            kaunter[item.sudut]++; 
         }
+    });
+    
+    let popular = Object.keys(kaunter).reduce((a, b) => kaunter[a] > kaunter[b] ? a : b);
+    document.getElementById('stat-popular').innerText = filteredData.length > 0 ? popular : "Tiada Data";
+
+    // 5. Update Carta Bar
+    kemasKiniCartaBar(kaunter);
+    
+    // 6. Update Jadual Analisa (Jadual bawah carta)
+    const tBody = document.getElementById('analisa-tbody');
+    if (tBody) {
+        tBody.innerHTML = filteredData.map(row => {
+            // Logik kategori Guru (Purple) vs Murid (Biru)
+            let isGuru = row.kategori && row.kategori.toString().toLowerCase().includes('guru');
+            
+            let warnaKategori = isGuru ? 'text-purple-400 border-purple-800' : 'text-blue-400 border-blue-800';
+            let labelKategori = isGuru ? 'GURU' : 'MURID';
+            let paparanKelas = isGuru ? '-' : (row.kelas || '-');
+
+            return `
+                <tr class="hover:bg-zinc-900/40 text-xs">
+                    <td class="p-4 font-bold text-zinc-400">${row.masa}</td>
+                    <td class="p-4"><span class="px-2 py-0.5 border rounded text-[10px] uppercase font-bold ${warnaKategori}">${labelKategori}</span></td>
+                    <td class="p-4 font-bold text-white">${row.nama}</td>
+                    <td class="p-4 text-zinc-300">${paparanKelas}</td>
+                    <td class="p-4 text-yellow-400">${row.sudut}</td>
+                </tr>`;
+        }).join('');
+    }
+
+    // 7. Kira Top Pengunjung (Statistik tambahan)
+    kiraTopPengunjungDinamik(filteredData);
+}
 
 function cetakLaporanPDF(mod) {
     // 1. SIMPAN warna asal (Dark Mode)
