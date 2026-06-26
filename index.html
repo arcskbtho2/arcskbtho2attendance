@@ -66,7 +66,7 @@ body {
             <h2 class="text-sm font-bold uppercase tracking-wider text-zinc-400 mb-3 flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-yellow-400"></span> Pilih Ruang / Sudut Aktiviti
             </h2>
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
                 <div onclick="pilihSudut('Ruang Bacaan & Google TV', this)" class="kad-sudut aktif bg-zinc-900 border-2 border-yellow-400 p-4 rounded-xl text-center cursor-pointer transition transform hover:scale-102 group">
                     <div class="text-3xl mb-2 group-hover:animate-bounce">📖</div>
                     <div class="text-xs font-bold text-white tracking-wide">Ruang Bacaan & Google TV</div>
@@ -98,6 +98,14 @@ body {
                 <div onclick="pilihSudut('Bilik Tayang', this)" class="kad-sudut bg-zinc-900 border border-zinc-800 p-4 rounded-xl text-center cursor-pointer transition transform hover:scale-102 group">
                     <div class="text-3xl mb-2 group-hover:animate-bounce">🎬</div>
                     <div class="text-xs font-bold text-zinc-400 group-hover:text-white tracking-wide">Bilik Tayang</div>
+                </div>
+                <div onclick="pilihSudut('PdPc/Nilam', this)" class="kad-sudut bg-zinc-900 border border-zinc-800 p-4 rounded-xl text-center cursor-pointer transition transform hover:scale-102 group">
+                   <div class="text-3xl mb-2 group-hover:animate-bounce">📝</div>
+                   <div class="text-xs font-bold text-zinc-400 group-hover:text-white tracking-wide">PdPc / Nilam</div>
+                </div>
+                <div onclick="pilihSudut('Lawatan', this)" class="kad-sudut bg-zinc-900 border border-zinc-800 p-4 rounded-xl text-center cursor-pointer transition transform hover:scale-102 group">
+                   <div class="text-3xl mb-2 group-hover:animate-bounce">🚌</div>
+                   <div class="text-xs font-bold text-zinc-400 group-hover:text-white tracking-wide">Lawatan</div>
                 </div>
             </div>
         </div>
@@ -575,9 +583,17 @@ function janaStatistikDinamik() {
             document.getElementById('stat-total').innerText = total;
 
             let kaunter = { 
-                "Ruang Bacaan & Google TV": 0, "Ruang Permainan Dalaman": 0, "Red spot": 0, 
-                "DBHOSS NovaTech": 0, "Ruang Komik": 0, "Sudut Pameran": 0, "Studio TVPSS": 0, "Bilik Tayang": 0
-            };
+    "Ruang Bacaan & Google TV": 0, 
+    "Ruang Permainan Dalaman": 0, 
+    "Red spot": 0, 
+    "DBHOSS NovaTech": 0, 
+    "Sudut Komik": 0, 
+    "Ruang Pameran": 0, 
+    "Studio TVPSS": 0, 
+    "Bilik Tayang": 0,
+    "PdPc/Nilam": 0,      // Tambah ini
+    "Lawatan": 0          // Tambah ini
+};
             
             filteredData.forEach(item => { if(kaunter[item.sudut] !== undefined) kaunter[item.sudut]++; });
 
