@@ -533,7 +533,7 @@ function logOut() {
                         kiraLelaki[item.nama] = (kiraLelaki[item.nama] || 0) + 1;
                     }
                 }
-            });
+            };
 
             let topLelaki = Object.keys(kiraLelaki).reduce((a, b) => kiraLelaki[a] > kiraLelaki[b] ? a : b, null);
             document.getElementById('top-lelaki-nama').innerText = topLelaki || "Tiada Data";
