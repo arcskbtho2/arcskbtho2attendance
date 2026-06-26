@@ -654,25 +654,30 @@ function janaStatistikDinamik() {
     kemasKiniCartaBar(kaunter);
     
     // 6. Update Jadual Analisa (Jadual bawah carta)
-    const tBody = document.getElementById('analisa-tbody');
+   const tBody = document.getElementById('analisa-tbody');
     if (tBody) {
-        tBody.innerHTML = filteredData.map(row => {
-            // Logik kategori Guru (Purple) vs Murid (Biru)
-            let isGuru = row.kategori && row.kategori.toString().toLowerCase().includes('guru');
-            
-            let warnaKategori = isGuru ? 'text-purple-400 border-purple-800' : 'text-blue-400 border-blue-800';
-            let labelKategori = isGuru ? 'GURU' : 'MURID';
-            let paparanKelas = isGuru ? '-' : (row.kelas || '-');
+        if (filteredData.length === 0) {
+            console.log("Tiada data untuk tarikh/bulan ini.");
+            tBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-zinc-500">Tiada rekod ditemui untuk tempoh ini.</td></tr>`;
+        } else {
+            tBody.innerHTML = filteredData.map(row => {
+                // Pastikan key 'kategori' wujud, kalau tak ada, anggap 'Murid'
+                let kategoriData = row.kategori ? row.kategori.toString().toLowerCase() : 'murid';
+                let isGuru = kategoriData.includes('guru');
+                
+                let warnaKategori = isGuru ? 'text-purple-400 border-purple-800' : 'text-blue-400 border-blue-800';
+                let labelKategori = isGuru ? 'GURU' : 'MURID';
+                let paparanKelas = isGuru ? '-' : (row.kelas || '-');
 
-            return `
-                <tr class="hover:bg-zinc-900/40 text-xs">
-                    <td class="p-4 font-bold text-zinc-400">${row.masa}</td>
-                    <td class="p-4"><span class="px-2 py-0.5 border rounded text-[10px] uppercase font-bold ${warnaKategori}">${labelKategori}</span></td>
-                    <td class="p-4 font-bold text-white">${row.nama}</td>
-                    <td class="p-4 text-zinc-300">${paparanKelas}</td>
-                    <td class="p-4 text-yellow-400">${row.sudut}</td>
-                </tr>`;
-        }).join('');
+                return `
+                    <tr class="hover:bg-zinc-900/40 text-xs">
+                        <td class="p-4 font-bold text-zinc-400">${row.masa || '-'}</td>
+                        <td class="p-4"><span class="px-2 py-0.5 border rounded text-[10px] uppercase font-bold ${warnaKategori}">${labelKategori}</span></td>
+                        <td class="p-4 font-bold text-white">${row.nama || 'Tiada Nama'}</td>
+                        <td class="p-4 text-zinc-300">${paparanKelas}</td>
+                        <td class="p-4 text-yellow-400">${row.sudut || '-'}</td>
+                    </tr>`;
+            }).join('');
     }
 
     // 7. Kira Top Pengunjung (Statistik tambahan)
