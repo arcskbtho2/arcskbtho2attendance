@@ -665,18 +665,18 @@ function janaStatistikDinamik() {
             if(total === 0) {
                 tBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-zinc-500 text-xs">Belum ada imbasan direkodkan.</td></tr>`;
             } else {
-                tBody.innerHTML = filteredData.map(row => {
-                    let infoMasaPaparan = modAnalisaSemasa === 'hari' ? row.masa : row.tarikhTeks;
-                    let warnaKategori = row.kategori === 'Guru' ? 'text-purple-400 border-purple-800' : 'text-blue-400 border-blue-800';
-                    return `
-                        <tr class="hover:bg-zinc-900/40 text-xs pdf-border-dark">
-                            <td class="p-4 font-mono font-bold text-zinc-400 pdf-text-dark">${infoMasaPaparan}</td>
-                            <td class="p-4"><span class="px-2 py-0.5 bg-zinc-950 border rounded text-[10px] uppercase font-bold ${warnaKategori}">${row.kategori || 'Murid'}</span></td>
-                            <td class="p-4 font-bold text-white pdf-text-dark">${row.nama}</td>
-                            <td class="p-4 text-zinc-300 pdf-text-dark">${row.kelas}</td>
-                            <td class="p-4"><span class="px-2 py-1 bg-zinc-950 border border-zinc-800 rounded-md text-yellow-400 font-semibold pdf-border-dark pdf-text-dark">${row.sudut}</span></td>
-                        </tr>`;
-                }).join('');
+               tBody.innerHTML = filteredData.map(row => {
+    let infoMasaPaparan = modAnalisaSemasa === 'hari' ? row.masa : row.tarikhTeks;
+    let warnaKategori = row.kategori === 'Guru' ? 'text-purple-400 border-purple-800' : 'text-blue-400 border-blue-800';
+    return `
+        <tr class="hover:bg-zinc-900/40 text-xs pdf-border-dark">
+            <td class="p-4 font-mono font-bold text-zinc-400 pdf-text-dark">${infoMasaPaparan}</td>
+            <td class="p-4"><span class="px-2 py-0.5 bg-zinc-950 border rounded text-[10px] uppercase font-bold ${warnaKategori}">${row.kategori || 'Murid'}</span></td>
+            <td class="p-4 font-bold text-white pdf-text-dark">${row.nama}</td>
+            <td class="p-4 text-zinc-300 pdf-text-dark">${row.kelas}</td>
+            <td class="p-4"><span class="px-2 py-1 bg-zinc-950 border border-zinc-800 rounded-md text-yellow-400 font-semibold pdf-border-dark pdf-text-dark">${row.sudut}</span></td>
+        </tr>`;
+}).join('');
             }
         }
 
