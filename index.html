@@ -279,18 +279,20 @@
 </div>
 
 <div id="modal-input-pelawat" class="fixed inset-0 bg-[#141416]/90 z-[9999] hidden flex items-center justify-center p-4">
-    <div class="bg-zinc-900 p-8 rounded-2xl border border-zinc-800 w-full max-w-sm text-center">
-        <h2 class="text-white font-bold mb-4">Maklumat Pelawat</h2>
-        <input type="text" id="input-nama-pelawat" placeholder="Nama Pelawat" 
-               class="w-full p-3 mb-4 bg-zinc-950 border border-zinc-700 rounded-lg text-white">
-        <input type="text" id="input-institusi-pelawat" placeholder="Institusi / Sekolah" 
-               class="w-full p-3 mb-6 bg-zinc-950 border border-zinc-700 rounded-lg text-white">
-        <button id="btn-teruskan-pelawat" onclick="simpanDataPelawat()" 
-                class="w-full py-3 bg-yellow-400 font-bold text-black rounded-lg hover:bg-yellow-500 transition-all">
+    <div class="bg-zinc-900 p-8 rounded-2xl border border-zinc-800 w-full max-w-sm">
+        
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-white font-bold">Maklumat Pelawat</h2>
+            <button onclick="tutupModal('modal-input-pelawat')" class="text-zinc-500 hover:text-white transition text-lg font-bold">
+                ❌ BATAL
+            </button>
+        </div>
+
+        <input type="text" id="input-nama-pelawat" placeholder="Nama Pelawat" class="w-full p-3 mb-4 bg-zinc-950 border border-zinc-700 rounded-lg text-white">
+        <input type="text" id="input-institusi-pelawat" placeholder="Institusi / Sekolah" class="w-full p-3 mb-6 bg-zinc-950 border border-zinc-700 rounded-lg text-white">
+        
+        <button id="btn-teruskan-pelawat" onclick="simpanDataPelawat()" class="w-full py-3 bg-yellow-400 font-bold text-black rounded-lg hover:bg-yellow-500 transition-all">
             HANTAR
-        </button>
-        <button onclick="tutupModal('modal-input-pelawat')" class="w-full py-2 text-zinc-500 text-xs font-bold hover:text-white transition">
-            ❌ BATAL
         </button>
     </div>
 </div>
