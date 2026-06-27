@@ -203,21 +203,27 @@
             <button onclick="cetakLaporanPDF('bulan')" class="px-5 py-2.5 bg-yellow-400 text-black font-bold rounded-lg hover:bg-yellow-500 transition text-sm">📊 Cetak Laporan Bulanan</button>
         </div>
 
-        <div class="overflow-x-auto mt-6">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="text-xs text-zinc-500 border-b border-zinc-800">
-                        <th class="p-4">Masa</th>
-                        <th class="p-4">Kategori</th>
-                        <th class="p-4">Nama</th>
-                        <th class="p-4">Kelas</th>
-                        <th class="p-4">Sudut</th>
-                    </tr>
-                </thead>
-                <tbody id="log-table-body">
-                    </tbody>
-            </table>
-        </div>
+<div class="overflow-x-auto mt-6">
+    <h3 class="text-blue-400 font-bold mt-4">Rekod Murid</h3>
+    <table class="w-full text-left border-collapse mb-6">
+        <thead>
+            <tr class="text-xs text-zinc-500 border-b border-zinc-800">
+                <th class="p-4">Masa</th><th class="p-4">Kategori</th><th class="p-4">Nama</th><th class="p-4">Kelas</th><th class="p-4">Sudut</th>
+            </tr>
+        </thead>
+        <tbody id="log-table-murid"></tbody>
+    </table>
+
+    <h3 class="text-purple-400 font-bold mt-4">Rekod Guru</h3>
+    <table class="w-full text-left border-collapse mb-6">
+        <tbody id="log-table-guru"></tbody>
+    </table>
+
+    <h3 class="text-orange-400 font-bold mt-4">Rekod Pelawat</h3>
+    <table class="w-full text-left border-collapse mb-6">
+        <tbody id="log-table-pelawat"></tbody>
+    </table>
+</div>
     </div>
 </section>
     </main>
@@ -691,30 +697,24 @@ function janaStatistikDinamik() {
     // 3. Render Jadual
     const tBody = document.getElementById('log-table-body');
     tBody.innerHTML = filteredData.map(row => {
-        let kat = (row.kategori || "").toString().toLowerCase().trim();
-        let isGuru = kat.includes('guru');
-        let warnaKategori = '';
-    let teksKategori = '';
-        if (kat.includes('guru')) {
-        warnaKategori = 'text-purple-400';
-        teksKategori = 'GURU';
-    } else if (kat.includes('pelawat')) {
-        warnaKategori = 'text-orange-400'; // Warna khas untuk pelawat
-        teksKategori = 'PELAWAT';
-    } else {
-        warnaKategori = 'text-blue-400';
-        teksKategori = 'MURID';
-    }
-        return `
+        let dataMurid = filteredData.filter(r => !(r.kategori || "").toLowerCase().includes('guru') && !(r.kategori || "").toLowerCase().includes('pelawat'));
+    let dataGuru = filteredData.filter(r => (r.kategori || "").toLowerCase().includes('guru'));
+    let dataPelawat = filteredData.filter(r => (r.kategori || "").toLowerCase().includes('pelawat'));
+
+    function janaBaris(data, warna, teks) {
+        return data.map(row => `
             <tr class="text-xs border-b border-zinc-800">
                 <td class="p-4">${row.masa}</td>
-                <td class="p-4 font-bold ${warnaKategori}">${teksKategori}</td>
+                <td class="p-4 font-bold ${warna}">${teks}</td>
                 <td class="p-4 font-bold">${row.nama}</td>
                 <td class="p-4">${row.kelas}</td>
                 <td class="p-4 text-yellow-400">${row.sudut}</td>
-            </tr>`;
-    }).join('');
-    
+            </tr>`).join('');
+    }
+
+    document.getElementById('log-table-murid').innerHTML = janaBaris(dataMurid, 'text-blue-400', 'MURID');
+    document.getElementById('log-table-guru').innerHTML = janaBaris(dataGuru, 'text-purple-400', 'GURU');
+    document.getElementById('log-table-pelawat').innerHTML = janaBaris(dataPelawat, 'text-orange-400', 'PELAWAT');
     // 4. PANGGIL KIRAAN TOP PENGUNJUNG (PENTING!)
     if (filteredData.length > 0) {
         kiraTopPengunjungDinamik(filteredData);
