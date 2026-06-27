@@ -177,17 +177,17 @@
                 <div class="p-3 bg-zinc-950 rounded-lg border border-zinc-800">
                     <div class="text-[10px] text-zinc-500 font-bold uppercase">Murid Lelaki 👦</div>
                     <div id="top-lelaki-nama" class="text-sm font-bold text-blue-400">Tiada Data</div>
-                    <div id="top-lelaki-info" class="text-[10px] text-zinc-400">-</div>
+                    <div id="top-lelaki-info" class="text-[10px] text-zinc-400"> </div>
                 </div>
                 <div class="p-3 bg-zinc-950 rounded-lg border border-zinc-800">
                     <div class="text-[10px] text-zinc-500 font-bold uppercase">Murid Perempuan 👧</div>
                     <div id="top-perempuan-nama" class="text-sm font-bold text-pink-400">Tiada Data</div>
-                    <div id="top-perempuan-info" class="text-[10px] text-zinc-400">-</div>
+                    <div id="top-perempuan-info" class="text-[10px] text-zinc-400"> </div>
                 </div>
                 <div class="p-3 bg-zinc-950 rounded-lg border border-zinc-800">
                     <div class="text-[10px] text-zinc-500 font-bold uppercase">👨‍🏫 Guru 👩‍🏫</div>
                     <div id="top-guru-nama" class="text-sm font-bold text-purple-400">Tiada Data</div>
-                    <div id="top-guru-info" class="text-[10px] text-zinc-400">-</div>
+                    <div id="top-guru-info" class="text-[10px] text-zinc-400"> </div>
                 </div>
             </div>
         </div>
@@ -533,7 +533,7 @@ function kiraTopPengunjungDinamik(data) {
         }
 
         // 2. KIRA KELAS PALING AKTIF (Mengira semua rekod dari Kolum D)
-        // Kita tapis supaya tak ambil nilai kosong atau " "
+        // Kita tapis supaya tak ambil nilai kosong atau 
         if (kelas && kelas !== " " && kelas !== "Tiada Data" && kelas !== "Tiada Kelas") {
             kiraKelas[kelas] = (kiraKelas[kelas] || 0) + 1;
         }
