@@ -253,7 +253,7 @@
     <script>
 localStorage.clear();
     sessionStorage.clear();
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzWiJhANMGvR67zUR55ZIO-vCGlzhK4e4L4ImbEOoP3C0jg5YNmUaidcY0hJi2EhBs3Xw/exec"; 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwbx55gnRYXg1ZPclc_n9OGRVmTe1dI8rI-14RknQf71z0KlzxSxqYclEbiFAT3TLUyxg/exec"; 
     let sudutSemasa = "Ruang Bacaan & Google TV"; 
     let html5QrcodeScanner = null;
     let modAnalisaSemasa = "hari"; 
@@ -508,11 +508,16 @@ function simpanDataDenganKelas() {
     }
 }
 
-function prosesHantarKeServer(barcode, kelas) {
+// Saya tambah parameter optional namaManual dan institusiManual
+function prosesHantarKeServer(barcode, kelas, namaManual = "", institusiManual = "") {
     const params = new URLSearchParams();
     params.append('barcode', barcode);
     params.append('sudut', sudutSemasa);
     params.append('kelas', kelas);
+    
+    // Tambah parameter untuk pelawat
+    params.append('namaManual', namaManual);
+    params.append('institusiManual', institusiManual);
 
     fetch(WEB_APP_URL, { 
         method: 'POST', 
@@ -527,13 +532,13 @@ function prosesHantarKeServer(barcode, kelas) {
             
             let objMasa = new Date();
             databaseSebenar.unshift({ 
-    tarikhTeks: objMasa.toLocaleDateString('en-GB').split('/').join('-'), 
-    masa: objMasa.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }), 
-    nama: data.nama, 
-    kelas: kelas || data.kelas, 
-    sudut: sudutSemasa,
-    kategori: data.kategori // Pastikan ini ada!
-});
+                tarikhTeks: objMasa.toLocaleDateString('en-GB').split('/').join('-'), 
+                masa: objMasa.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }), 
+                nama: data.nama, 
+                kelas: kelas || data.kelas, 
+                sudut: sudutSemasa,
+                kategori: data.kategori 
+            });
             janaStatistikDinamik();
         } else {
             paparNotifikasi(`❌ Ralat: ${data.mesej}`, 'error');
