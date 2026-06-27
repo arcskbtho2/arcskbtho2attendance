@@ -712,37 +712,20 @@ function cetakLaporanPDF(mod) {
         rujukanCartaBar.update();
     }, 500);
 }
-
 // --- EVENT LISTENERS & MODAL ---
 document.addEventListener('click', function(event) {
     const inputDibenarkan = ['login-id', 'login-pass', 'input-barcode', 'filter-tarikh', 'filter-bulan'];
-    
-    // Jika klik di luar kotak yang dibenarkan, baru kita halakan fokus ke barcode
-    if (!inputDibenarkan.includes(event.target.id)) {
-        document.getElementById('input-barcode').focus();
-    }
+    if (!inputDibenarkan.includes(event.target.id)) document.activeElement.blur();
 });
 
-// Pastikan kursor kekal dalam kotak input barcode untuk scanner USB
-document.getElementById('input-barcode').addEventListener('blur', function(event) {
-    // TAMBAHAN: Semak sama ada elemen yang dituju adalah bahagian Login
-    const targetElement = document.activeElement;
-    const isLoggingIn = targetElement.id === 'login-id' || targetElement.id === 'login-pass';
-
-    if (!isLoggingIn) {
-        setTimeout(() => {
-            document.getElementById('input-barcode').focus();
-        }, 200);
-    }
-});
-
-// Fungsi tutup modal kelas
+// Gabungan fungsi klik untuk menutup modal
 window.onclick = function(event) {
     const modalKelas = document.getElementById('modal-pilih-kelas');
     if (event.target == modalKelas) {
         modalKelas.classList.add('hidden');
     }
 };
+
 // Tamat skrip
 </script>
 </body>
