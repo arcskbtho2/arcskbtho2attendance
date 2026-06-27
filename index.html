@@ -524,26 +524,27 @@ function kiraTopPengunjungDinamik(data) {
         let nama = (item.nama || "").trim();
         let kelas = (item.kelas || "").trim();
         
-        // 1. Kira untuk Murid Lelaki/Perempuan & Guru (Fungsi Asal)
+        // 1. ASINGKAN DATA GURU & MURID
         if (kat === "Guru") {
             kiraGuru[nama] = (kiraGuru[nama] || 0) + 1;
         } else {
+            // Logik Murid
             let n = nama.toLowerCase();
             if (n.includes('binti') || n.includes('bt') || n.includes('a/p')) {
                 kiraPerempuan[nama] = (kiraPerempuan[nama] || 0) + 1;
             } else {
                 kiraLelaki[nama] = (kiraLelaki[nama] || 0) + 1;
             }
-        }
 
-        // 2. KIRA KELAS PALING AKTIF (Mengira semua rekod dari Kolum D)
-        // Kita tapis supaya tak ambil nilai kosong atau 
-        if (kelas && kelas !== " " && kelas !== "Tiada Data" && kelas !== "Tiada Kelas") {
-            kiraKelas[kelas] = (kiraKelas[kelas] || 0) + 1;
+            // KIRA KELAS (Hanya murid, abaikan data tidak sah)
+            // Logik ini tidak akan berubah-ubah, dia akan ambil semua kelas
+            if (kelas && kelas !== "-" && kelas !== "Tiada Data" && kelas !== "Tiada Kelas") {
+                kiraKelas[kelas] = (kiraKelas[kelas] || 0) + 1;
+            }
         }
     });
 
-    const getTop = (obj) => {
+  const getTop = (obj) => {
         let keys = Object.keys(obj);
         if (keys.length === 0) return { nama: "Tiada Data", jumlah: 0 };
         let topNama = keys.reduce((a, b) => obj[a] > obj[b] ? a : b);
