@@ -726,13 +726,12 @@ window.addEventListener('DOMContentLoaded', (event) => {
     // 1. INPUT BARCODE
     const inputBarcode = document.getElementById('input-barcode');
     
-    // 2. SETUP OBSERVER (Letak di luar, supaya dia 'jaga' modal sentiasa)
-const observer = new MutationObserver((mutations) => {
+    // 2. SETUP OBSERVER
+    const observer = new MutationObserver((mutations) => {
         const modal = document.getElementById('modal-pelawat');
-        // Pastikan modal wujud dan kelas 'hidden' baru sahaja dibuang
         if (modal && !modal.classList.contains('hidden')) {
-            modal.style.display = "flex"; // Paksa tunjuk
-            document.getElementById('input-nama-pelawat').focus(); // Terus fokus
+            modal.style.display = "flex";
+            document.getElementById('input-nama-pelawat').focus();
         }
     });
     observer.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['class'] });
@@ -763,7 +762,6 @@ const observer = new MutationObserver((mutations) => {
             }
         });
     }
-});
 
     // 2. BUTANG HANTAR PELAWAT
     const btnHantar = document.getElementById('btn-hantar-pelawat');
@@ -783,7 +781,7 @@ const observer = new MutationObserver((mutations) => {
                 sudut: typeof sudutSemasa !== 'undefined' ? sudutSemasa : "Pintu Utama"
             };
 
-       try {
+            try {
                 if (typeof google !== 'undefined' && google.script) {
                     google.script.run
                         .withSuccessHandler(() => {
@@ -802,10 +800,10 @@ const observer = new MutationObserver((mutations) => {
             } catch (e) {
                 console.error("Ralat sistem: ", e);
             }
-        }); // Tutup addEventListener('click')
-    } // Tutup if(btnHantar)
+        });
+    }
 
-    // 3. EVENT LISTENERS LAIN (Fokus Barcode, dll)
+    // 3. EVENT LISTENERS LAIN
     document.addEventListener('click', function(event) {
         const elemenManual = ['login-id', 'login-pass', 'select-kelas', 'filter-tarikh', 'filter-bulan'];
         if (elemenManual.includes(event.target.id)) return;
@@ -819,14 +817,14 @@ const observer = new MutationObserver((mutations) => {
             if (target && (target.id === 'login-id' || target.id === 'login-pass' || target.id === 'select-kelas')) return;
             setTimeout(() => { document.getElementById('input-barcode').focus(); }, 150);
         });
-        
-window.onclick = function(event) {
+    }
+
+    window.onclick = function(event) {
         const modalKelas = document.getElementById('modal-pilih-kelas');
         if (modalKelas && event.target == modalKelas) {
             modalKelas.classList.add('hidden');
         }
     };
-    
-}); // Ini adalah penutup untuk window.addEventListener('DOMContentLoaded', ...)
+});
 </script>
 </body>
