@@ -533,8 +533,8 @@ function kiraTopPengunjungDinamik(data) {
         }
 
         // 2. KIRA KELAS PALING AKTIF (Mengira semua rekod dari Kolum D)
-        // Kita tapis supaya tak ambil nilai kosong atau "-"
-        if (kelas && kelas !== "-" && kelas !== "Tiada Data" && kelas !== "Tiada Kelas") {
+        // Kita tapis supaya tak ambil nilai kosong atau " "
+        if (kelas && kelas !== " " && kelas !== "Tiada Data" && kelas !== "Tiada Kelas") {
             kiraKelas[kelas] = (kiraKelas[kelas] || 0) + 1;
         }
     });
