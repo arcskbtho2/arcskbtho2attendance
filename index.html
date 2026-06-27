@@ -727,10 +727,12 @@ window.addEventListener('DOMContentLoaded', (event) => {
     const inputBarcode = document.getElementById('input-barcode');
     
     // 2. SETUP OBSERVER (Letak di luar, supaya dia 'jaga' modal sentiasa)
-    const observer = new MutationObserver((mutations) => {
+const observer = new MutationObserver((mutations) => {
         const modal = document.getElementById('modal-pelawat');
-modal.style.display = "flex"; // Paksa tunjuk
-modal.classList.remove('hidden'); // Buang class hidden asal
+        // Pastikan modal wujud dan kelas 'hidden' baru sahaja dibuang
+        if (modal && !modal.classList.contains('hidden')) {
+            modal.style.display = "flex"; // Paksa tunjuk
+            document.getElementById('input-nama-pelawat').focus(); // Terus fokus
         }
     });
     observer.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['class'] });
