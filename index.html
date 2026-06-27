@@ -9,6 +9,7 @@
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script src="https://apis.google.com/js/api.js"></script>
     <style>
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #141416; }
@@ -722,9 +723,18 @@ function cetakLaporanPDF(mod) {
     }, 500);
 }
 window.addEventListener('DOMContentLoaded', (event) => {
-
     // 1. INPUT BARCODE
     const inputBarcode = document.getElementById('input-barcode');
+    
+    // 2. SETUP OBSERVER (Letak di luar, supaya dia 'jaga' modal sentiasa)
+    const observer = new MutationObserver((mutations) => {
+        const modal = document.getElementById('modal-pelawat');
+modal.style.display = "flex"; // Paksa tunjuk
+modal.classList.remove('hidden'); // Buang class hidden asal
+        }
+    });
+    observer.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['class'] });
+
     if (inputBarcode) {
         inputBarcode.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -732,24 +742,26 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 
                 // Logik Pelawat
                 if (kod === "000000000000") {
-    // --- TAMBAH BUNYI BIP ---
-    const beep = document.getElementById('beep-sound');
-    if (beep) {
-        beep.play(); 
-    }
+                    const beep = document.getElementById('beep-sound');
+                    if (beep) beep.play(); 
 
-    // --- TERUSKAN BUKA MODAL ---
-    const modal = document.getElementById('modal-pelawat');
-    if (modal) {
-        modal.classList.remove('hidden');
-        document.getElementById('input-nama-pelawat').focus();
-    }
-    this.value = ""; 
-    return; 
-}
+                    const modal = document.getElementById('modal-pelawat');
+                    if (modal) {
+                        modal.classList.remove('hidden');
+                    }
+                    this.value = ""; 
+                    return; 
+                }
+
+                // Sistem Asal Murid/Guru
+                if (kod) { 
+                    hantarKeSistem(kod); 
+                    this.value = ''; 
+                }
             }
         });
     }
+});
 
     // 2. BUTANG HANTAR PELAWAT
     const btnHantar = document.getElementById('btn-hantar-pelawat');
