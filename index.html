@@ -715,22 +715,25 @@ function cetakLaporanPDF(mod) {
 
 // --- EVENT LISTENERS & MODAL ---
 document.addEventListener('click', function(event) {
-    // Kita cuma fokus ke input barcode kalau kita klik tempat lain, 
-    // TAPI jangan tutup/blur kalau kita sedang cuba log in atau filter
     const inputDibenarkan = ['login-id', 'login-pass', 'input-barcode', 'filter-tarikh', 'filter-bulan'];
     
-    // Jangan blur! Cuma bagi fokus ke barcode kalau klik tempat kosong
+    // Jika klik di luar kotak yang dibenarkan, baru kita halakan fokus ke barcode
     if (!inputDibenarkan.includes(event.target.id)) {
-        // Jangan tulis blur() di sini
         document.getElementById('input-barcode').focus();
     }
 });
 
 // Pastikan kursor kekal dalam kotak input barcode untuk scanner USB
-document.getElementById('input-barcode').addEventListener('blur', function() {
-    setTimeout(() => {
-        this.focus();
-    }, 200);
+document.getElementById('input-barcode').addEventListener('blur', function(event) {
+    // TAMBAHAN: Semak sama ada elemen yang dituju adalah bahagian Login
+    const targetElement = document.activeElement;
+    const isLoggingIn = targetElement.id === 'login-id' || targetElement.id === 'login-pass';
+
+    if (!isLoggingIn) {
+        setTimeout(() => {
+            document.getElementById('input-barcode').focus();
+        }, 200);
+    }
 });
 
 // Fungsi tutup modal kelas
