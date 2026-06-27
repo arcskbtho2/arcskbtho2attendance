@@ -733,15 +733,16 @@ function cetakLaporanPDF(mod) {
         rujukanCartaBar.update();
     }, 500);
 }
-// --- KOD BARCODE & LOGIK PELAWAT ---
 window.addEventListener('DOMContentLoaded', (event) => {
+
+    // 1. INPUT BARCODE
     const inputBarcode = document.getElementById('input-barcode');
     if (inputBarcode) {
         inputBarcode.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 let kod = this.value.trim();
                 
-                // 1. Logik Pelawat (Kod Khas)
+                // Logik Pelawat
                 if (kod === "000000000000") {
                     document.getElementById('modal-pelawat').classList.remove('hidden');
                     setTimeout(() => { document.getElementById('input-nama-pelawat').focus(); }, 300);
@@ -749,7 +750,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     return; 
                 }
 
-                // 2. Sistem Asal Murid/Guru
+                // Sistem Asal
                 if (kod) { 
                     hantarKeSistem(kod); 
                     this.value = ''; 
@@ -757,71 +758,56 @@ window.addEventListener('DOMContentLoaded', (event) => {
             }
         });
     }
-});
 
-// --- BUTANG HANTAR PELAWAT ---
-document.getElementById('btn-hantar-pelawat').addEventListener('click', function() {
-    const nama = document.getElementById('input-nama-pelawat').value;
-    const institusi = document.getElementById('input-institusi-pelawat').value;
-    
-    if (nama === "" || institusi === "") {
-        alert("Sila isi nama dan institusi!");
-        return;
+    // 2. BUTANG HANTAR PELAWAT
+    const btnHantar = document.getElementById('btn-hantar-pelawat');
+    if (btnHantar) {
+        btnHantar.addEventListener('click', function() {
+            const nama = document.getElementById('input-nama-pelawat').value;
+            const institusi = document.getElementById('input-institusi-pelawat').value;
+            
+            if (nama === "" || institusi === "") {
+                alert("Sila isi nama dan institusi!");
+                return;
+            }
+
+            const dataPelawat = {
+                nama: nama,
+                institusi: institusi,
+                sudut: typeof sudutSemasa !== 'undefined' ? sudutSemasa : "Pintu Utama"
+            };
+
+            google.script.run.withSuccessHandler(() => {
+                alert("Data pelawat berjaya disimpan!");
+                document.getElementById('modal-pelawat').classList.add('hidden');
+                document.getElementById('input-nama-pelawat').value = "";
+                document.getElementById('input-institusi-pelawat').value = "";
+            }).rekodPelawat(dataPelawat);
+        });
     }
 
-    const dataPelawat = {
-        nama: nama,
-        institusi: institusi,
-        sudut: sudutSemasa // Pastikan variabel sudutSemasa wujud dalam sistem cikgu
-    };
+    // 3. EVENT LISTENERS LAIN (Fokus Barcode, dll)
+    document.addEventListener('click', function(event) {
+        const elemenManual = ['login-id', 'login-pass', 'select-kelas', 'filter-tarikh', 'filter-bulan'];
+        if (elemenManual.includes(event.target.id)) return;
+        const inputBarcode = document.getElementById('input-barcode');
+        if (inputBarcode) inputBarcode.focus();
+    });
 
-    google.script.run.withSuccessHandler(() => {
-        alert("Data pelawat berjaya disimpan!");
-        document.getElementById('modal-pelawat').classList.add('hidden');
-        document.getElementById('input-nama-pelawat').value = "";
-        document.getElementById('input-institusi-pelawat').value = "";
-    }).rekodPelawat(dataPelawat);
-});
-
-// --- EVENT LISTENERS & MODAL ---
-document.addEventListener('click', function(event) {
-    const elemenManual = ['login-id', 'login-pass', 'select-kelas', 'filter-tarikh', 'filter-bulan'];
-    
-    // Jika cikgu klik pada elemen manual, JANGAN buat apa-apa
-    if (elemenManual.includes(event.target.id)) {
-        return;
-    }
-
-    // Jika cikgu klik di mana-mana ruang kosong, fokus ke input barcode
-    const inputBarcode = document.getElementById('input-barcode');
     if (inputBarcode) {
-        inputBarcode.focus();
+        inputBarcode.addEventListener('blur', function(e) {
+            const target = e.relatedTarget || document.activeElement;
+            if (target && (target.id === 'login-id' || target.id === 'login-pass' || target.id === 'select-kelas')) return;
+            setTimeout(() => { document.getElementById('input-barcode').focus(); }, 150);
+        });
     }
+
+    window.onclick = function(event) {
+        const modalKelas = document.getElementById('modal-pilih-kelas');
+        if (modalKelas && event.target == modalKelas) {
+            modalKelas.classList.add('hidden');
+        }
+    };
 });
-
-// Pastikan fokus tetap pada input-barcode untuk imbasan USB
-document.getElementById('input-barcode').addEventListener('blur', function(e) {
-    const target = e.relatedTarget || document.activeElement;
-    
-    // Syarat: JANGAN ganggu jika cikgu sedang menaip di Login atau pilih Kelas
-    if (target && (target.id === 'login-id' || target.id === 'login-pass' || target.id === 'select-kelas')) {
-        return;
-    }
-    
-    // Delay 150ms supaya sistem sempat buka dropdown/keyboard
-    setTimeout(() => {
-        document.getElementById('input-barcode').focus();
-    }, 150);
-});
-
-// Fungsi tutup modal kelas
-window.onclick = function(event) {
-    const modalKelas = document.getElementById('modal-pilih-kelas');
-    if (event.target == modalKelas) {
-        modalKelas.classList.add('hidden');
-    }
-};
-
-// Tamat skrip
 </script>
 </body>
