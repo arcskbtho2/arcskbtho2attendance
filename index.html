@@ -764,14 +764,20 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 sudut: typeof sudutSemasa !== 'undefined' ? sudutSemasa : "Pintu Utama"
             };
 
+            if (typeof google !== 'undefined' && google.script) {
             google.script.run.withSuccessHandler(() => {
                 alert("Data pelawat berjaya disimpan!");
                 document.getElementById('modal-pelawat').classList.add('hidden');
                 document.getElementById('input-nama-pelawat').value = "";
                 document.getElementById('input-institusi-pelawat').value = "";
-            }).rekodPelawat(dataPelawat);
-        });
-    }
+})
+        .withFailureHandler((err) => {
+            alert("Ralat: " + err.message);
+        })
+        .rekodPelawat(dataPelawat);
+} else {
+    alert("Ralat: Sistem tidak dapat berhubung dengan Google Server. Sila buka melalui URL Web App yang betul.");
+}
 
     // 3. EVENT LISTENERS LAIN (Fokus Barcode, dll)
     document.addEventListener('click', function(event) {
