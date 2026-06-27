@@ -232,7 +232,7 @@
     <script>
 localStorage.clear();
     sessionStorage.clear();
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw_McVBrLGeshWIu5FysAZ69cR6p4Fgxqri6yNktmKzC5FBly_ZuYwoRFQ_jof5_qfhNQ/exec"; 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyV_i3pQm9BcVLDurUFVzeEru9HRgwvAtyv5Y3S2t00zOrpeiGuWswcwp_0xU_Htgs2Nw/exec"; 
     let sudutSemasa = "Ruang Bacaan & Google TV"; 
     let html5QrcodeScanner = null;
     let modAnalisaSemasa = "hari"; 
@@ -516,20 +516,20 @@ function kiraTopPengunjungDinamik(data) {
     let kiraLelaki = {}, kiraPerempuan = {}, kiraGuru = {}, kiraKelas = {};
     
     data.forEach(item => {
-        let kat = (item.kategori || "").toString().toLowerCase().trim();
+        let kat = (item.kategori || "").toString().trim();
         let nama = (item.nama || "").trim();
         let kelas = (item.kelas || "").trim();
         
-        // 1. Logik Guru (PdPc/NILAM)
-        if (kat.includes('guru')) {
+        // Logika Guru (PdPc/NILAM)
+        if (kat === "Guru") {
             kiraGuru[nama] = (kiraGuru[nama] || 0) + 1;
-            // Kira kelas paling aktif untuk PdPc/NILAM
-            if (kelas && kelas !== "-" && kelas !== "Tiada Data") {
+            // Kelas paling aktif berdasarkan input guru
+            if (kelas && kelas !== "Tiada Data" && kelas !== "Tiada Kelas") {
                 kiraKelas[kelas] = (kiraKelas[kelas] || 0) + 1;
             }
         } 
-        // 2. Logik Murid (Kunjungan Biasa)
-        else {
+        // Logika Murid (Kunjungan Biasa)
+        else if (kat === "Murid") {
             let n = nama.toLowerCase();
             if (n.includes('binti') || n.includes('bt') || n.includes('a/p')) {
                 kiraPerempuan[nama] = (kiraPerempuan[nama] || 0) + 1;
@@ -541,19 +541,21 @@ function kiraTopPengunjungDinamik(data) {
 
     const getTop = (obj) => {
         let keys = Object.keys(obj);
-        return keys.length > 0 ? keys.reduce((a, b) => obj[a] > obj[b] ? a : b) : "Tiada Data";
+        if (keys.length === 0) return { nama: "Tiada Data", jumlah: 0 };
+        let topNama = keys.reduce((a, b) => obj[a] > obj[b] ? a : b);
+        return { nama: topNama, jumlah: obj[topNama] };
     };
 
-    // Update UI - Semua elemen tetap ada
     let topL = getTop(kiraLelaki);
     let topP = getTop(kiraPerempuan);
     let topG = getTop(kiraGuru);
     let topK = getTop(kiraKelas);
 
-document.getElementById('top-lelaki-nama').innerText = (topL && topL !== "Tiada Data") ? `${topL} (${kiraLelaki[topL]} kali)` : "Tiada Data";
-document.getElementById('top-perempuan-nama').innerText = (topP && topP !== "Tiada Data") ? `${topP} (${kiraPerempuan[topP]} kali)` : "Tiada Data";
-document.getElementById('top-guru-nama').innerText = (topG && topG !== "Tiada Data") ? `${topG} (${kiraGuru[topG]} kali)` : "Tiada Data";
-document.getElementById('stat-top-kelas').innerText = (topK && topK !== "Tiada Data") ? `${topK} (${kiraKelas[topK]} kali)` : "Tiada Data";
+    // Update UI dengan format: Nama (Jumlah kali)
+    document.getElementById('top-lelaki-nama').innerText = `${topL.nama} (${topL.jumlah} kali)`;
+    document.getElementById('top-perempuan-nama').innerText = `${topP.nama} (${topP.jumlah} kali)`;
+    document.getElementById('top-guru-nama').innerText = `${topG.nama} (${topG.jumlah} kali)`;
+    document.getElementById('stat-top-kelas').innerText = `${topK.nama} (${topK.jumlah} kali)`;
 }
         // FUNGSI CARTA YANG TELAH DIKEMAS KINI DENGAN JUMLAH DAN PERATUS (%) DENGAN PLUGIN DATALABELS
 // 1. KEMASKINI CARTA: Menggunakan ejaan "Murid" penuh
