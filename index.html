@@ -211,7 +211,12 @@
             <button onclick="cetakLaporanPDF('hari')" class="px-5 py-2.5 bg-yellow-400 text-black font-bold rounded-lg hover:bg-yellow-500 transition text-sm">🖨️ Cetak Laporan Harian</button>
             <button onclick="cetakLaporanPDF('bulan')" class="px-5 py-2.5 bg-yellow-400 text-black font-bold rounded-lg hover:bg-yellow-500 transition text-sm">📊 Cetak Laporan Bulanan</button>
         </div>
-
+        
+           </div> <button onclick="cetakLaporanPelawat()" class="px-5 py-2.5 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 transition text-sm">
+    🖨️ Cetak Senarai Pelawat
+</button>
+   </div> 
+    
 <div class="overflow-x-auto mt-6">
  <h3 class="text-blue-400 font-bold mt-4">Rekod Murid</h3>
 <div class="jadual-scroll mb-6">
@@ -813,6 +818,27 @@ function cetakLaporanPDF(mod) {
         rujukanCartaBar.options.plugins.datalabels.color = originalDataLabels;
         rujukanCartaBar.update();
     }, 500);
+}
+        function cetakLaporanPelawat() {
+    const tableHTML = document.getElementById('log-table-pelawat').innerHTML;
+    const printWindow = window.open('', '_blank');
+    
+    printWindow.document.write(`<html><head><title>Senarai Pelawat</title>
+        <style>
+            body{font-family:sans-serif; padding:20px;}
+            table{width:100%; border-collapse:collapse;}
+            th, td{padding:10px; border:1px solid #333; text-align:left;}
+            h1{text-align:center;}
+        </style></head><body>
+            <h1>Rekod Pelawat PSS</h1>
+            <table>
+                <thead>
+                    <tr><th>Masa</th><th>Kategori</th><th>Nama</th><th>Institusi</th><th>Sudut</th></tr>
+                </thead>
+                <tbody>${tableHTML}</tbody>
+            </table>
+            <script>window.print(); window.close();<\/script>
+        </body></html>`);
 }
 
 // --- EVENT LISTENERS ---
