@@ -260,18 +260,23 @@
         <span>© 2026 AL-GHAZALI RESOURCES CENTER • SK BANDAR TUN HUSSEIN ONN 2</span>
     </footer>
 <div id="modal-pilih-kelas" class="fixed inset-0 bg-[#141416]/90 z-[9999] hidden flex items-center justify-center p-4">
-    <div class="bg-zinc-900 p-8 rounded-2xl border border-zinc-800 w-full max-w-sm text-center">
-        <h2 class="text-white font-bold mb-4">Sila Pilih Kelas</h2>
+    <div class="bg-zinc-900 p-8 rounded-2xl border border-zinc-800 w-full max-w-sm">
+        
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-white font-bold">Sila Pilih Kelas</h2>
+            <button onclick="tutupModal('modal-pilih-kelas')" class="text-zinc-500 hover:text-white transition text-lg font-bold">
+                ❌ BATAL
+            </button>
+        </div>
+
         <select id="select-kelas" class="w-full p-3 mb-6 bg-zinc-950 border border-zinc-700 rounded-lg text-white">
-        </select>
+            </select>
+        
         <button id="btn-teruskan" onclick="simpanDataDenganKelas()" class="w-full py-3 bg-yellow-400 font-bold text-black rounded-lg hover:bg-yellow-500 transition-all">
             TERUSKAN
         </button>
-        <button onclick="tutupModal('modal-pilih-kelas')" class="w-full py-2 text-zinc-500 text-xs font-bold hover:text-white transition">
-            ❌ BATAL
-        </button>
     </div>
-</div> 
+</div>
 
 <div id="modal-input-pelawat" class="fixed inset-0 bg-[#141416]/90 z-[9999] hidden flex items-center justify-center p-4">
     <div class="bg-zinc-900 p-8 rounded-2xl border border-zinc-800 w-full max-w-sm text-center">
