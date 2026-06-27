@@ -234,11 +234,26 @@
             TERUSKAN
         </button>
     </div>
+    <div id="modal-input-pelawat" class="fixed inset-0 bg-[#141416]/90 z-[9999] hidden flex items-center justify-center p-4">
+    <div class="bg-zinc-900 p-8 rounded-2xl border border-zinc-800 w-full max-w-sm text-center">
+        <h2 class="text-white font-bold mb-4">Maklumat Pelawat</h2>
+        
+        <input type="text" id="input-nama-pelawat" placeholder="Nama Pelawat" 
+               class="w-full p-3 mb-4 bg-zinc-950 border border-zinc-700 rounded-lg text-white">
+        
+        <input type="text" id="input-institusi-pelawat" placeholder="Institusi / Sekolah" 
+               class="w-full p-3 mb-6 bg-zinc-950 border border-zinc-700 rounded-lg text-white">
+        
+        <button id="btn-teruskan-pelawat" onclick="simpanDataPelawat()" 
+                class="w-full py-3 bg-yellow-400 font-bold text-black rounded-lg hover:bg-yellow-500 transition-all">
+            HANTAR
+        </button>
+        </div>
 </div>
     <script>
 localStorage.clear();
     sessionStorage.clear();
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby3LX_HW1qtKGKEKmHCJ0OdTyY0IzGScYE89So5ItvIffocKRgeB1jJZln-kPJqp_RjKg/exec"; 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzWiJhANMGvR67zUR55ZIO-vCGlzhK4e4L4ImbEOoP3C0jg5YNmUaidcY0hJi2EhBs3Xw/exec"; 
     let sudutSemasa = "Ruang Bacaan & Google TV"; 
     let html5QrcodeScanner = null;
     let modAnalisaSemasa = "hari"; 
@@ -374,6 +389,29 @@ function tukarTab(tab) {
                 hentikanKamera();
             }
         }
+        function panggilModalPelawat() {
+    document.getElementById('modal-input-pelawat').classList.remove('hidden');
+}
+
+// Fungsi untuk menghantar data pelawat ke backend
+function simpanDataPelawat() {
+    const nama = document.getElementById('input-nama-pelawat').value;
+    const institusi = document.getElementById('input-institusi-pelawat').value;
+    
+    if (nama === "" || institusi === "") {
+        alert("Sila isi nama dan institusi!");
+        return;
+    }
+
+    // Panggil fungsi hantar ke server (kita akan update fungsi ini nanti)
+    // Kita hantar data tambahan 'nama' dan 'institusi'
+    prosesHantarKeServer(barcodeSementara, "Lawatan", nama, institusi); 
+    
+    // Tutup modal & clear input
+    document.getElementById('modal-input-pelawat').classList.add('hidden');
+    document.getElementById('input-nama-pelawat').value = "";
+    document.getElementById('input-institusi-pelawat').value = "";
+}
 
         function setModAnalisa(mod) {
             modAnalisaSemasa = mod;
@@ -442,13 +480,22 @@ function hantarKeSistem(barcode) {
     let barcodeBersih = barcode.toString().trim().replace(/\s+/g, '');
     if (!barcodeBersih) { isScanning = false; return; }
 
+    // Kita gunakan satu struktur if-else yang kemas
     if (sudutSemasa === "PdPc/Nilam") {
         dataImbasanSementara = { barcode: barcodeBersih };
         document.getElementById('modal-pilih-kelas').classList.remove('hidden');
-        isScanning = false; 
-    } else {
+        isScanning = false; // Buka modal, jadi kita set false
+    } 
+    else if (sudutSemasa === "Lawatan") {
+        barcodeSementara = barcodeBersih; // Simpan untuk digunakan nanti
+        panggilModalPelawat(); // Panggil fungsi modal pelawat
+        isScanning = false; // Buka modal, jadi kita set false
+    } 
+    else {
+        // Untuk sudut lain (bukan Nilam/Lawatan)
         paparNotifikasi(`Memproses ${barcodeBersih}...`, 'info');
-        prosesHantarKeServer(barcodeBersih, ""); 
+        prosesHantarKeServer(barcodeBersih, "");
+        // isScanning akan diset false di dalam prosesHantarKeServer
     }
 }
 
