@@ -234,26 +234,25 @@
             TERUSKAN
         </button>
     </div>
-    <div id="modal-input-pelawat" class="fixed inset-0 bg-[#141416]/90 z-[9999] hidden flex items-center justify-center p-4">
+</div> 
+
+<div id="modal-input-pelawat" class="fixed inset-0 bg-[#141416]/90 z-[9999] hidden flex items-center justify-center p-4">
     <div class="bg-zinc-900 p-8 rounded-2xl border border-zinc-800 w-full max-w-sm text-center">
         <h2 class="text-white font-bold mb-4">Maklumat Pelawat</h2>
-        
         <input type="text" id="input-nama-pelawat" placeholder="Nama Pelawat" 
                class="w-full p-3 mb-4 bg-zinc-950 border border-zinc-700 rounded-lg text-white">
-        
         <input type="text" id="input-institusi-pelawat" placeholder="Institusi / Sekolah" 
                class="w-full p-3 mb-6 bg-zinc-950 border border-zinc-700 rounded-lg text-white">
-        
         <button id="btn-teruskan-pelawat" onclick="simpanDataPelawat()" 
                 class="w-full py-3 bg-yellow-400 font-bold text-black rounded-lg hover:bg-yellow-500 transition-all">
             HANTAR
         </button>
-        </div>
+    </div>
 </div>
     <script>
 localStorage.clear();
     sessionStorage.clear();
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzzsP_4dI9rVuhES2e9tGCUaKtU0f0J74Zuvg3ZPmvQoVkU8iV8Kq2KjqSm3yaDrr9cbg/exec"; 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwjgmCZZmD_bj5Il-gEUf89Gj2I09O8fl1vmrQYuSBlDaD27V685eUWPTQ6qncgcrLLwg/exec"; 
     let sudutSemasa = "Ruang Bacaan & Google TV"; 
     let html5QrcodeScanner = null;
     let modAnalisaSemasa = "hari"; 
@@ -403,11 +402,9 @@ function simpanDataPelawat() {
         return;
     }
 
-    // Panggil fungsi hantar ke server (kita akan update fungsi ini nanti)
-    // Kita hantar data tambahan 'nama' dan 'institusi'
-    prosesHantarKeServer(barcodeSementara, "Lawatan", nama, institusi); 
+    // TUKAR DI SINI: Tukar "" kepada "PELAWAT"
+    prosesHantarKeServer(barcodeSementara, "PELAWAT", nama, institusi); 
     
-    // Tutup modal & clear input
     document.getElementById('modal-input-pelawat').classList.add('hidden');
     document.getElementById('input-nama-pelawat').value = "";
     document.getElementById('input-institusi-pelawat').value = "";
@@ -471,16 +468,17 @@ function simpanDataPelawat() {
         }
 // [PASTIKAN KOD INI ADALAH SATU-SATUNYA VERSI UNTUK FUNGSI INI]
 
-let dataImbasanSementara = null; 
+let barcodeSementara = ""; 
+
 function hantarKeSistem(barcode) {
     if (isScanning) return;
     isScanning = true;
 
     let barcodeBersih = barcode.toString().trim().replace(/\s+/g, '');
-    if (!barcodeBersih) { isScanning = false; return; }
-
-    // DEBUG: Cuba tambah alert ini untuk check apa yang sistem 'nampak'
-    console.log("Sudut Semasa:", sudutSemasa); 
+    if (!barcodeBersih) { 
+        isScanning = false; 
+        return; 
+    }
 
     if (sudutSemasa === "PdPc/Nilam") {
         dataImbasanSementara = { barcode: barcodeBersih };
@@ -488,8 +486,8 @@ function hantarKeSistem(barcode) {
         isScanning = false; 
     } 
     else if (sudutSemasa === "Lawatan") {
-        barcodeSementara = barcodeBersih;
-        document.getElementById('modal-input-pelawat').classList.remove('hidden'); // Ini yang patut buka modal
+        barcodeSementara = barcodeBersih; 
+        document.getElementById('modal-input-pelawat').classList.remove('hidden');
         isScanning = false;
     } 
     else {
@@ -513,8 +511,6 @@ function prosesHantarKeServer(barcode, kelas, namaManual = "", institusiManual =
     params.append('barcode', barcode);
     params.append('sudut', sudutSemasa);
     params.append('kelas', kelas);
-    
-    // Tambah parameter untuk pelawat
     params.append('namaManual', namaManual);
     params.append('institusiManual', institusiManual);
 
@@ -529,6 +525,7 @@ function prosesHantarKeServer(barcode, kelas, namaManual = "", institusiManual =
             mainBunyiBip();
             paparNotifikasi(`🎉 Berjaya! ${data.nama}`, 'success');
             
+            // Logik asal anda dikekalkan di sini
             let objMasa = new Date();
             databaseSebenar.unshift({ 
                 tarikhTeks: objMasa.toLocaleDateString('en-GB').split('/').join('-'), 
@@ -538,6 +535,8 @@ function prosesHantarKeServer(barcode, kelas, namaManual = "", institusiManual =
                 sudut: sudutSemasa,
                 kategori: data.kategori 
             });
+            
+            // Jana statistik terus menggunakan data terkini yang baru di-unshift
             janaStatistikDinamik();
         } else {
             paparNotifikasi(`❌ Ralat: ${data.mesej}`, 'error');
