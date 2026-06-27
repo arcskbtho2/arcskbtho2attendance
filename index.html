@@ -511,23 +511,12 @@ function logOut() {
     window.location.reload(); 
 }
 function kiraTopPengunjungDinamik(data) {
-    console.log("Data yang diterima untuk diproses:", data); // DEBUG: Cikgu boleh tengok data ini di Console (F12)
-    
-    if (!data || data.length === 0) {
-        console.warn("Tiada data untuk diproses!");
-        document.getElementById('top-lelaki-nama').innerText = "Tiada Data";
-        document.getElementById('top-perempuan-nama').innerText = "Tiada Data";
-        document.getElementById('top-guru-nama').innerText = "Tiada Data";
-        document.getElementById('stat-top-kelas').innerText = "Tiada Data";
-        return;
-    }
+    if (!data || data.length === 0) return;
 
     let kiraLelaki = {}, kiraPerempuan = {}, kiraGuru = {}, kiraKelas = {};
     
     data.forEach(item => {
-        // Semak jika nama wujud
         if(!item.nama) return;
-        
         let kat = (item.kategori || "").toString().toLowerCase().trim();
         let nama = item.nama.trim();
         let kelas = (item.kelas || "Tiada Kelas").trim();
@@ -535,7 +524,7 @@ function kiraTopPengunjungDinamik(data) {
         if (kat.includes('guru')) {
             kiraGuru[nama] = (kiraGuru[nama] || 0) + 1;
         } else {
-            kiraKelas[kelas] = (kiraKelas[kelas] || 0) + 1;
+            if(kelas !== "-") kiraKelas[kelas] = (kiraKelas[kelas] || 0) + 1;
             
             let n = nama.toLowerCase();
             if (n.includes('binti') || n.includes('bt') || n.includes('a/p')) {
@@ -546,24 +535,15 @@ function kiraTopPengunjungDinamik(data) {
         }
     });
 
-    // Fungsi helper mencari yang tertinggi
     const getTop = (obj) => {
         let keys = Object.keys(obj);
-        return keys.length > 0 ? keys.reduce((a, b) => obj[a] > obj[b] ? a : b) : null;
+        return keys.length > 0 ? keys.reduce((a, b) => obj[a] > obj[b] ? a : b) : "Tiada Data";
     };
 
-    // Update UI
-    let topL = getTop(kiraLelaki);
-    document.getElementById('top-lelaki-nama').innerText = topL ? topL : "Tiada Data";
-    
-    let topP = getTop(kiraPerempuan);
-    document.getElementById('top-perempuan-nama').innerText = topP ? topP : "Tiada Data";
-
-    let topG = getTop(kiraGuru);
-    document.getElementById('top-guru-nama').innerText = topG ? topG : "Tiada Data";
-
-    let topK = getTop(kiraKelas);
-    document.getElementById('stat-top-kelas').innerText = topK ? topK : "Tiada Data";
+    document.getElementById('top-lelaki-nama').innerText = getTop(kiraLelaki);
+    document.getElementById('top-perempuan-nama').innerText = getTop(kiraPerempuan);
+    document.getElementById('top-guru-nama').innerText = getTop(kiraGuru);
+    document.getElementById('stat-top-kelas').innerText = getTop(kiraKelas);
 }
         // FUNGSI CARTA YANG TELAH DIKEMAS KINI DENGAN JUMLAH DAN PERATUS (%) DENGAN PLUGIN DATALABELS
 // 1. KEMASKINI CARTA: Menggunakan ejaan "Murid" penuh
@@ -667,26 +647,6 @@ function janaStatistikDinamik() {
     }
 }
 
-    function kiraTopPengunjungDinamik(data) {
-        let kiraLelaki = {}, kiraPerempuan = {}, kiraGuru = {}, infoPengguna = {}, kiraKelas = {};
-        data.forEach(item => {
-            if(!item.nama) return;
-            infoPengguna[item.nama] = item.kelas || "-";
-            let kat = (item.kategori || "").toString().toLowerCase().trim();
-            if (kat.includes('guru')) {
-                kiraGuru[item.nama] = (kiraGuru[item.nama] || 0) + 1;
-            } else {
-                kiraKelas[item.kelas] = (kiraKelas[item.kelas] || 0) + 1;
-                let n = item.nama.toLowerCase();
-                if (n.includes('binti') || n.includes('bt') || n.includes('a/p')) {
-                    kiraPerempuan[item.nama] = (kiraPerempuan[item.nama] || 0) + 1;
-                } else {
-                    kiraLelaki[item.nama] = (kiraLelaki[item.nama] || 0) + 1;
-                }
-            }
-        });
-        // (Logik update UI untuk top pengunjung seperti asal...)
-    }
 // --- FUNGSI CETAK LAPORAN ---
 function cetakLaporanPDF(mod) {
     const originalTicksX = rujukanCartaBar.options.scales.x.ticks.color;
@@ -754,21 +714,6 @@ window.onclick = function(event) {
     }
 };
 
-window.addEventListener('DOMContentLoaded', () => {
-    const dateInput = document.getElementById('filter-tarikh');
-    if (dateInput) {
-        const observer = new MutationObserver(() => {
-            const today = new Date().toLocaleDateString('en-CA');
-            if (dateInput.value !== today) {
-                dateInput.value = today;
-                janaStatistikDinamik();
-            }
-        });
-        observer.observe(dateInput, { attributes: true, childList: true, subtree: true });
-        dateInput.value = new Date().toLocaleDateString('en-CA');
-        janaStatistikDinamik();
-    }
-}); 
 // Tamat skrip
 </script>
 </body>
