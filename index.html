@@ -498,42 +498,44 @@ function logOut() {
     // 2. Refresh terus halaman untuk buang semua data dari memori
     window.location.reload(); 
 }
-function kiraTopPengunjungDinamik(dataBulanIni) {
-    let kiraLelaki = {}, kiraPerempuan = {}, kiraGuru = {}, infoPengguna = {}, kiraKelas = {};
+function kiraTopPengunjungDinamik(data) {
+    let kiraLelaki = {}, kiraPerempuan = {}, kiraGuru = {}, kiraKelas = {};
     
-    dataBulanIni.forEach(item => {
-        if(!item.nama) return;
-        infoPengguna[item.nama] = item.kelas || "-";
-        
+    data.forEach(item => {
+        let nama = (item.nama || "").trim();
+        let kelas = (item.kelas || "").trim();
         let kat = (item.kategori || "").toString().toLowerCase().trim();
+        
         if (kat.includes('guru')) {
-            kiraGuru[item.nama] = (kiraGuru[item.nama] || 0) + 1;
+            kiraGuru[nama] = (kiraGuru[nama] || 0) + 1;
         } else {
-            kiraKelas[item.kelas] = (kiraKelas[item.kelas] || 0) + 1;
-            let n = item.nama.toLowerCase();
-            if (n.includes('binti') || n.includes('bt') || n.includes('a/p')) {
-                kiraPerempuan[item.nama] = (kiraPerempuan[item.nama] || 0) + 1;
+            kiraKelas[kelas] = (kiraKelas[kelas] || 0) + 1;
+            let n = nama.toLowerCase();
+            if (n.includes('binti') || n.includes('bt ') || n.includes(' bt') || n.includes('a/p')) {
+                kiraPerempuan[nama] = (kiraPerempuan[nama] || 0) + 1;
             } else {
-                kiraLelaki[item.nama] = (kiraLelaki[item.nama] || 0) + 1;
+                kiraLelaki[nama] = (kiraLelaki[nama] || 0) + 1;
             }
         }
     });
-    
+
+    const getTop = (obj) => Object.keys(obj).length > 0 ? Object.keys(obj).reduce((a, b) => obj[a] > obj[b] ? a : b) : null;
+
     // Update UI dengan selamat
-    let topLelaki = Object.keys(kiraLelaki).reduce((a, b) => (kiraLelaki[a]||0) > (kiraLelaki[b]||0) ? a : b, null);
-    document.getElementById('top-lelaki-nama').innerText = topLelaki || "Tiada Data";
-    document.getElementById('top-lelaki-info').innerText = topLelaki ? `${infoPengguna[topLelaki] || '-'} • ${kiraLelaki[topLelaki]} kali` : "-";
+    let topL = getTop(kiraLelaki);
+    document.getElementById('top-lelaki-nama').innerText = topL || "Tiada Data";
+    if(document.getElementById('top-lelaki-info')) document.getElementById('top-lelaki-info').innerText = topL ? `${kiraLelaki[topL]} kali` : "-";
 
-    let topPerempuan = Object.keys(kiraPerempuan).reduce((a, b) => (kiraPerempuan[a]||0) > (kiraPerempuan[b]||0) ? a : b, null);
-    document.getElementById('top-perempuan-nama').innerText = topPerempuan || "Tiada Data";
-    document.getElementById('top-perempuan-info').innerText = topPerempuan ? `${infoPengguna[topPerempuan] || '-'} • ${kiraPerempuan[topPerempuan]} kali` : "-";
+    let topP = getTop(kiraPerempuan);
+    document.getElementById('top-perempuan-nama').innerText = topP || "Tiada Data";
+    if(document.getElementById('top-perempuan-info')) document.getElementById('top-perempuan-info').innerText = topP ? `${kiraPerempuan[topP]} kali` : "-";
 
-    let topGuru = Object.keys(kiraGuru).reduce((a, b) => (kiraGuru[a]||0) > (kiraGuru[b]||0) ? a : b, null);
-    document.getElementById('top-guru-nama').innerText = topGuru || "Tiada Data";
-    document.getElementById('top-guru-info').innerText = topGuru ? `${kiraGuru[topGuru]} kunjungan` : "-";
+    let topG = getTop(kiraGuru);
+    document.getElementById('top-guru-nama').innerText = topG || "Tiada Data";
+    if(document.getElementById('top-guru-info')) document.getElementById('top-guru-info').innerText = topG ? `${kiraGuru[topG]} kali` : "-";
 
-    document.getElementById('stat-top-kelas').innerText = Object.keys(kiraKelas).reduce((a, b) => (kiraKelas[a]||0) > (kiraKelas[b]||0) ? a : b, "Tiada Data");
-} // <-- Kurungan penutup untuk fungsi kiraTopPengunjungDinamik
+    document.getElementById('stat-top-kelas').innerText = getTop(kiraKelas) || "Tiada Data";
+}
         // FUNGSI CARTA YANG TELAH DIKEMAS KINI DENGAN JUMLAH DAN PERATUS (%) DENGAN PLUGIN DATALABELS
 // 1. KEMASKINI CARTA: Menggunakan ejaan "Murid" penuh
     function kemasKiniCartaBar(kaunterData) {
