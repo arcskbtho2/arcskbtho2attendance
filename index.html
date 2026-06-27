@@ -820,7 +820,6 @@ const observer = new MutationObserver((mutations) => {
             setTimeout(() => { document.getElementById('input-barcode').focus(); }, 150);
         });
     }
-
 window.onclick = function(event) {
         const modalKelas = document.getElementById('modal-pilih-kelas');
         if (modalKelas && event.target == modalKelas) {
@@ -828,6 +827,6 @@ window.onclick = function(event) {
         }
     };
     
-}); //
+}); // Ini adalah penutup untuk window.addEventListener('DOMContentLoaded', ...)
 </script>
 </body>
