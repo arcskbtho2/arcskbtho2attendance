@@ -552,6 +552,7 @@ function kiraTopPengunjungDinamik(data) {
     let topK = getTop(kiraKelas);
 
     // Update UI
+// Update UI
 document.getElementById('top-lelaki-nama').innerHTML = `
     <div class="text-sm font-bold text-blue-400">${topL.nama}</div>
     <div class="text-[10px] text-zinc-400">(${topL.jumlah} kali)</div>
@@ -566,7 +567,6 @@ document.getElementById('top-guru-nama').innerHTML = `
     <div class="text-sm font-bold text-purple-400">${topG.nama}</div>
     <div class="text-[10px] text-zinc-400">(${topG.jumlah} kali)</div>
 `;
-}
         // FUNGSI CARTA YANG TELAH DIKEMAS KINI DENGAN JUMLAH DAN PERATUS (%) DENGAN PLUGIN DATALABELS
 // 1. KEMASKINI CARTA: Menggunakan ejaan "Murid" penuh
     function kemasKiniCartaBar(kaunterData) {
@@ -662,10 +662,10 @@ function janaStatistikDinamik() {
         kiraTopPengunjungDinamik(filteredData);
     } else {
         // Reset jika tiada data
-if(document.getElementById('top-lelaki-nama')) document.getElementById('top-lelaki-nama').innerHTML = "Tiada Data";
-if(document.getElementById('top-perempuan-nama')) document.getElementById('top-perempuan-nama').innerHTML = "Tiada Data";
-if(document.getElementById('top-guru-nama')) document.getElementById('top-guru-nama').innerHTML = "Tiada Data";
-if(document.getElementById('stat-top-kelas')) document.getElementById('stat-top-kelas').innerText = "Tiada Data";
+        if(document.getElementById('top-lelaki-nama')) document.getElementById('top-lelaki-nama').innerText = "Tiada Data";
+        if(document.getElementById('top-perempuan-nama')) document.getElementById('top-perempuan-nama').innerText = "Tiada Data";
+        if(document.getElementById('top-guru-nama')) document.getElementById('top-guru-nama').innerText = "Tiada Data";
+        if(document.getElementById('stat-top-kelas')) document.getElementById('stat-top-kelas').innerText = "Tiada Data";
     }
 }
 
