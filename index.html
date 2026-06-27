@@ -112,7 +112,8 @@
                 </div>
                 <p class="text-xs text-zinc-400">Sistem akan menangkap data sebaik sahaja barcode diimbas.</p>
   <input type="text" id="input-barcode" inputmode="none" placeholder="Sedia menerima imbasan..."   
-                       class="w-full p-4 bg-zinc-950 border-2 border-zinc-800 focus:border-yellow-400 rounded-xl text-center text-lg font-mono font-bold tracking-widest text-yellow-400 outline-none transition" autofocus>
+                       class="w-full p-4 bg-transparent border-none text-transparent outline-none cursor-default" 
+       style="position: absolute; opacity: 0; pointer-events: none;" autofocus>
             </div>
 
             <div class="space-y-4 flex flex-col justify-between">
@@ -725,6 +726,17 @@ window.onclick = function(event) {
         modalKelas.classList.add('hidden');
     }
 };
+        // Auto-focus ke input barcode setiap kali pengguna klik mana-mana tempat di skrin
+document.addEventListener('click', function() {
+    document.getElementById('input-barcode').focus();
+});
+
+// Pastikan kursor kekal dalam kotak input walaupun pengguna tekan butang lain
+document.getElementById('input-barcode').addEventListener('blur', function() {
+    setTimeout(() => {
+        this.focus();
+    }, 100);
+});
 
 // Tamat skrip
 </script>
