@@ -789,7 +789,16 @@ document.addEventListener('click', function(event) {
 // Pastikan fokus tetap pada input-barcode untuk imbasan USB
 document.getElementById('input-barcode').addEventListener('blur', function(e) {
     const target = e.relatedTarget || document.activeElement;
-    
+
+    const elemenDibenarkan = [
+        'login-id', 
+        'login-pass', 
+        'select-kelas', 
+        'input-nama-pelawat', 
+        'input-institusi-pelawat', 
+        'filter-tarikh', 
+        'filter-bulan'
+    ];
     // Syarat: JANGAN ganggu jika cikgu sedang menaip di Login atau pilih Kelas
     if (target && (target.id === 'login-id' || target.id === 'login-pass' || target.id === 'select-kelas')) {
         return;
@@ -798,7 +807,7 @@ document.getElementById('input-barcode').addEventListener('blur', function(e) {
     // Delay 150ms supaya sistem sempat buka dropdown/keyboard sebelum tarik balik fokus
     setTimeout(() => {
         document.getElementById('input-barcode').focus();
-    }, 150);
+    }, 200);
 });
 
 // Fungsi tutup modal kelas
