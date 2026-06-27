@@ -242,47 +242,44 @@ body {
 </div>
     <script>
         // TAMBAH KOD INI DI PALING ATAS SEKALI
-    localStorage.clear(); 
-    sessionStorage.clear();
-    // ... sambung kod sedia ada cikgu
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxSNdkkBCkTDiNlgAkBmUxIwa9wmOyX3lqdsYjR0t07a03zvpWC4bGzaSTVjlQC_tOGzA/exec"; 
+localStorage.clear();
+sessionStorage.clear();
 
-        let sudutSemasa = "Ruang Bacaan & Google TV"; 
-        let html5QrcodeScanner = null;
-        let modAnalisaSemasa = "hari"; 
-        let isScanning = false; 
-        let databaseSebenar = [];
-        let rujukanCartaBar = null;
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxSNdkkBCkTDiNlgAkBmUxIwa9wmOyX3lqdsYjR0t07a03zvpWC4bGzaSTVjlQC_tOGzA/exec"; 
 
-        document.getElementById('filter-tarikh').valueAsDate = new Date();
-        document.getElementById('filter-bulan').value = new Date().getMonth();
+let sudutSemasa = "Ruang Bacaan & Google TV"; 
+let html5QrcodeScanner = null;
+let modAnalisaSemasa = "hari"; 
+let isScanning = false; 
+let databaseSebenar = [];
+let rujukanCartaBar = null;
+
+document.getElementById('filter-tarikh').valueAsDate = new Date();
+document.getElementById('filter-bulan').value = new Date().getMonth();
 
      // FUNGSI LOG MASUK
-    function semakLogin() {
-        const id = document.getElementById('login-id').value.trim();
-        const pass = document.getElementById('login-pass').value.trim();
-        
-        if (id === "PSSSKBTHO2" && pass === "PSS4055") {
-            document.getElementById('login-modal').style.display = 'none';
-            sessionStorage.setItem('isLoggedIn', 'true');
-        } else {
-            document.getElementById('login-error').classList.remove('hidden');
-        }
+function semakLogin() {
+    const id = document.getElementById('login-id').value.trim();
+    const pass = document.getElementById('login-pass').value.trim();
+    if (id === "PSSSKBTHO2" && pass === "PSS4055") {
+        document.getElementById('login-modal').style.display = 'none';
+        sessionStorage.setItem('isLoggedIn', 'true');
+    } else {
+        document.getElementById('login-error').classList.remove('hidden');
     }
-        function formatTarikhStandard(tarikhTeks) {
-    // Tukar DD-MM-YYYY kepada YYYY-MM-DD untuk perbandingan
+}
+
+function formatTarikhStandard(tarikhTeks) {
     const parts = tarikhTeks.split('-');
     if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
     return tarikhTeks;
 }
-        function janaSenaraiKelas() {
+
+function janaSenaraiKelas() {
     const darjah = [1, 2, 3, 4, 5, 6];
     const namaKelas = ['JASMINE', 'HIBISCUS', 'SUNFLOWER', 'LAVENDER', 'TULIP', 'DAISY', 'SAKURA', 'ROSE', 'ORCHID', 'LILY'];
     const dropdown = document.getElementById('select-kelas');
-    
-    // Kosongkan dahulu (jika perlu)
     dropdown.innerHTML = '';
-    
     darjah.forEach(d => {
         namaKelas.forEach(n => {
             const namaPenuh = `${d} ${n}`;
@@ -290,7 +287,6 @@ body {
         });
     });
 }
-
     // CHECK LOGIN BILA PAGE LOAD
     window.onload = function() {
         janaSenaraiKelas();
@@ -531,36 +527,41 @@ function logOut() {
     // 2. Refresh terus halaman untuk buang semua data dari memori
     window.location.reload(); 
 }
- function kiraTopPengunjungDinamik(dataBulanIni) {
-    let kiraGuru = {}, kiraLelaki = {}, kiraPerempuan = {};
+function kiraTopPengunjungDinamik(dataBulanIni) {
+    let kiraLelaki = {}, kiraPerempuan = {}, kiraGuru = {}, infoPengguna = {}, kiraKelas = {};
     
     dataBulanIni.forEach(item => {
+        if(!item.nama) return;
+        
+        infoPengguna[item.nama] = item.kelas || "-";
+        
         let kat = (item.kategori || "").toString().toLowerCase().trim();
         if (kat.includes('guru')) {
             kiraGuru[item.nama] = (kiraGuru[item.nama] || 0) + 1;
         } else {
+            kiraKelas[item.kelas] = (kiraKelas[item.kelas] || 0) + 1;
             let n = item.nama.toLowerCase();
             if (n.includes('binti') || n.includes('bt') || n.includes('a/p')) {
                 kiraPerempuan[item.nama] = (kiraPerempuan[item.nama] || 0) + 1;
             } else {
                 kiraLelaki[item.nama] = (kiraLelaki[item.nama] || 0) + 1;
             }
-        }
     });
     
-    // ... (bahagian bawah fungsi ini kekalkan seperti asal)
-    let topLelaki = Object.keys(kiraLelaki).reduce((a, b) => kiraLelaki[a] > kiraLelaki[b] ? a : b, null);
+    // Update UI dengan selamat
+    let topLelaki = Object.keys(kiraLelaki).reduce((a, b) => (kiraLelaki[a]||0) > (kiraLelaki[b]||0) ? a : b, null);
     document.getElementById('top-lelaki-nama').innerText = topLelaki || "Tiada Data";
-    document.getElementById('top-lelaki-info').innerText = topLelaki ? `${infoPengguna[topLelaki]} • ${kiraLelaki[topLelaki]} kali` : "-";
+    document.getElementById('top-lelaki-info').innerText = topLelaki ? `${infoPengguna[topLelaki] || '-'} • ${kiraLelaki[topLelaki]} kali` : "-";
 
-    let topPerempuan = Object.keys(kiraPerempuan).reduce((a, b) => kiraPerempuan[a] > kiraPerempuan[b] ? a : b, null);
+    let topPerempuan = Object.keys(kiraPerempuan).reduce((a, b) => (kiraPerempuan[a]||0) > (kiraPerempuan[b]||0) ? a : b, null);
     document.getElementById('top-perempuan-nama').innerText = topPerempuan || "Tiada Data";
-    document.getElementById('top-perempuan-info').innerText = topPerempuan ? `${infoPengguna[topPerempuan]} • ${kiraPerempuan[topPerempuan]} kali` : "-";
+    document.getElementById('top-perempuan-info').innerText = topPerempuan ? `${infoPengguna[topPerempuan] || '-'} • ${kiraPerempuan[topPerempuan]} kali` : "-";
 
-    let topGuru = Object.keys(kiraGuru).reduce((a, b) => kiraGuru[a] > kiraGuru[b] ? a : b, null);
- document.getElementById('top-guru-nama').innerText = Object.keys(kiraGuru).reduce((a, b) => (kiraGuru[a]||0) > (kiraGuru[b]||0) ? a : b, "Tiada Data");
-}
-    document.getElementById('stat-top-kelas').innerText = Object.keys(kiraKelas).reduce((a, b) => kiraKelas[a] > kiraKelas[b] ? a : b, "Tiada Data");
+    let topGuru = Object.keys(kiraGuru).reduce((a, b) => (kiraGuru[a]||0) > (kiraGuru[b]||0) ? a : b, null);
+    document.getElementById('top-guru-nama').innerText = topGuru || "Tiada Data";
+    document.getElementById('top-guru-info').innerText = topGuru ? `${kiraGuru[topGuru]} kunjungan` : "-";
+
+    document.getElementById('stat-top-kelas').innerText = Object.keys(kiraKelas).reduce((a, b) => (kiraKelas[a]||0) > (kiraKelas[b]||0) ? a : b, "Tiada Data");
 }
 
         // FUNGSI CARTA YANG TELAH DIKEMAS KINI DENGAN JUMLAH DAN PERATUS (%) DENGAN PLUGIN DATALABELS
@@ -613,14 +614,12 @@ function logOut() {
     }
 function janaStatistikDinamik() {
     const dataPenuh = databaseSebenar;
-    const targetHari = document.getElementById('filter-tarikh').value; // YYYY-MM-DD
-    const bulanDipilih = document.getElementById('filter-bulan').value; // 0-11
+    const targetHari = document.getElementById('filter-tarikh').value;
+    const bulanDipilih = document.getElementById('filter-bulan').value;
     
     let filteredData = dataPenuh.filter(item => {
         if (!item.tarikhTeks) return false;
-        
         let tarikhItem = formatTarikhStandard(item.tarikhTeks);
-        
         if (modAnalisaSemasa === 'hari') {
             return tarikhItem === targetHari;
         } else {
@@ -629,10 +628,10 @@ function janaStatistikDinamik() {
         }
     });
 
-    // 3. Update Jumlah Statistik
-document.getElementById('stat-total').innerText = filteredData.length;
+    // Update Jumlah Statistik
+    document.getElementById('stat-total').innerText = filteredData.length;
 
-    // 4. Kira Sudut Popular
+    // Kira Sudut Popular
     let kaunter = { 
         "Ruang Bacaan & Google TV": 0, "Ruang Permainan Dalaman": 0, 
         "Red spot": 0, "DBHOSS NovaTech": 0, "Sudut Komik": 0, 
@@ -644,15 +643,13 @@ document.getElementById('stat-total').innerText = filteredData.length;
     let popular = Object.keys(kaunter).reduce((a, b) => kaunter[a] > kaunter[b] ? a : b);
     document.getElementById('stat-popular').innerText = filteredData.length > 0 ? popular : "Tiada Data";
 
-    // 5. Update Carta Bar
+    // Update Carta & Jadual
     kemasKiniCartaBar(kaunter);
     
-    // 6. Update Jadual Analisa (Menggunakan ID yang betul: log-table-body)
-  const tBody = document.getElementById('log-table-body');
+    const tBody = document.getElementById('log-table-body');
     tBody.innerHTML = filteredData.map(row => {
         let kat = (row.kategori || "").toString().toLowerCase().trim();
         let isGuru = kat.includes('guru');
-        
         return `
             <tr class="text-xs">
                 <td class="p-4 text-zinc-400">${row.masa || '-'}</td>
@@ -662,56 +659,46 @@ document.getElementById('stat-total').innerText = filteredData.length;
                 <td class="p-4 text-yellow-400">${row.sudut || '-'}</td>
             </tr>`;
     }).join('');
-        }
-    }
+    
     kiraTopPengunjungDinamik(filteredData);
 }
 
+// --- FUNGSI CETAK LAPORAN ---
 function cetakLaporanPDF(mod) {
-    // 1. SIMPAN warna asal (Dark Mode)
     const originalTicksX = rujukanCartaBar.options.scales.x.ticks.color;
     const originalTicksY = rujukanCartaBar.options.scales.y.ticks.color;
     const originalDataLabels = rujukanCartaBar.options.plugins.datalabels.color;
 
-    // 2. TUKAR kepada Hitam untuk cetakan
     rujukanCartaBar.options.scales.x.ticks.color = '#000000';
     rujukanCartaBar.options.scales.y.ticks.color = '#000000';
     rujukanCartaBar.options.plugins.datalabels.color = '#000000';
     rujukanCartaBar.update();
 
-    // 3. Ambil Screenshot (setTimeout untuk pastikan chart sempat berubah warna)
     setTimeout(() => {
         const canvas = document.getElementById('cartaSudutBar');
         const dataUrlCarta = canvas.toDataURL('image/png');
-
-        // [Tentukan Tajuk Laporan...]
         let tajukLaporan = "LAPORAN SISTEM E-KEHADIRAN PSS";
+        
         if (mod === 'hari') {
-            const tarikhDipilih = document.getElementById('filter-tarikh').value;
-            tajukLaporan += ` - HARIAN (${tarikhDipilih})`;
+            tajukLaporan += ` - HARIAN (${document.getElementById('filter-tarikh').value})`;
         } else {
             const bulanIndex = document.getElementById('filter-bulan').value;
             const senaraiBulan = ["JANUARI", "FEBRUARI", "MAC", "APRIL", "MEI", "JUN", "JULAI", "OGOS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DISEMBER"];
             tajukLaporan += ` - BULAN ${senaraiBulan[bulanIndex]} 2026`;
         }
 
-        // [Bina Jadual...]
         const labels = rujukanCartaBar.data.labels;
         const dataValues = rujukanCartaBar.data.datasets[0].data;
-        let barisJadual = labels.map((label, i) => `<tr>
-            <td style="padding:10px; border:1px solid #333;">${label}</td>
-            <td style="padding:10px; border:1px solid #333; font-weight:bold; text-align:center;">${dataValues[i]} Murid</td>
-        </tr>`).join('');
+        let barisJadual = labels.map((label, i) => `<tr><td style="padding:10px; border:1px solid #333;">${label}</td><td style="padding:10px; border:1px solid #333; font-weight:bold; text-align:center;">${dataValues[i]} Murid</td></tr>`).join('');
 
         let infoTambahan = (mod === 'bulan') ? `
             <div style="margin-top: 20px; border-top: 1px solid #000; padding-top: 10px;">
                 <h3>🏅 Analisa Top Pengunjung</h3>
-                <p>👨‍🎓 Lelaki: <strong>${document.getElementById('top-lelaki-nama').innerText}</strong> (${document.getElementById('top-lelaki-info').innerText})</p>
-                <p>👩‍🎓 Perempuan: <strong>${document.getElementById('top-perempuan-nama').innerText}</strong> (${document.getElementById('top-perempuan-info').innerText})</p>
-                <p>👨‍🏫 Guru: <strong>${document.getElementById('top-guru-nama').innerText}</strong> (${document.getElementById('top-guru-info').innerText})</p>
+                <p>👨‍🎓 Lelaki: <strong>${document.getElementById('top-lelaki-nama').innerText}</strong></p>
+                <p>👩‍🎓 Perempuan: <strong>${document.getElementById('top-perempuan-nama').innerText}</strong></p>
+                <p>👨‍🏫 Guru: <strong>${document.getElementById('top-guru-nama').innerText}</strong></p>
             </div>` : "";
 
-        // Buka Window Print
         const printWindow = window.open('', '_blank');
         printWindow.document.write(`<html><head><style>body{font-family:sans-serif; padding:40px; color:#000;} table{width:100%; border-collapse:collapse; margin-top:20px;} th, td{padding:10px; border:1px solid #333;}</style></head><body>
             <h1 style="text-align:center; font-size:20px;">${tajukLaporan}</h1>
@@ -722,51 +709,46 @@ function cetakLaporanPDF(mod) {
             <script>window.print(); window.close();<\/script>
         </body></html>`);
 
-        // 4. KEMBALIKAN warna asal (PENTING!)
         rujukanCartaBar.options.scales.x.ticks.color = originalTicksX;
         rujukanCartaBar.options.scales.y.ticks.color = originalTicksY;
         rujukanCartaBar.options.plugins.datalabels.color = originalDataLabels;
         rujukanCartaBar.update();
     }, 500);
 }
-// Kod ini menutup keyboard bila klik di luar input,
-    // TETAPI MENGECUALIKAN kotak login dan input barcode/filter
-    document.addEventListener('click', function(event) {
-        const targetId = event.target.id;
-        
-        // Senarai ID yang DIBENARKAN untuk fokus (tidak akan auto-blur)
-        const inputDibenarkan = [
-            'login-id', 
-            'login-pass', 
-            'input-barcode', 
-            'filter-tarikh', 
-            'filter-bulan'
-        ];
 
-        // Jika elemen yang diklik BUKAN dalam senarai yang dibenarkan, baru buat blur
-        if (!inputDibenarkan.includes(targetId)) {
-            document.activeElement.blur();
-        }
-    });
-window.addEventListener('DOMContentLoaded', (event) => {
-        // Dapatkan tarikh Malaysia (UTC+8)
-        const dateInput = document.getElementById('filter-tarikh');
-        const observer = new MutationObserver(() => {
-            const today = new Date().toLocaleDateString('en-CA'); // Format YYYY-MM-DD
-            if (dateInput && dateInput.value !== today) {
-                console.log("Ada skrip cuba ubah tarikh! Saya paksa balik ke hari ini.");
-                dateInput.value = today;
-                janaStatistikDinamik();
-            }
-        });
+// --- EVENT LISTENERS ---
+document.addEventListener('click', function(event) {
+    const inputDibenarkan = ['login-id', 'login-pass', 'input-barcode', 'filter-tarikh', 'filter-bulan'];
+    if (!inputDibenarkan.includes(event.target.id)) document.activeElement.blur();
+});
 
-        if (dateInput) {
-            observer.observe(dateInput, { attributes: true, childList: true, subtree: true });
-            // Tetapan awal
-            dateInput.value = new Date().toLocaleDateString('en-CA');
+window.onclick = function(event) {
+    const modalKelas = document.getElementById('modal-pilih-kelas');
+    if (event.target == modalKelas) modalKelas.classList.add('hidden');
+};
+
+window.addEventListener('DOMContentLoaded', () => {
+    const dateInput = document.getElementById('filter-tarikh');
+    const observer = new MutationObserver(() => {
+        const today = new Date().toLocaleDateString('en-CA');
+        if (dateInput && dateInput.value !== today) {
+            dateInput.value = today;
             janaStatistikDinamik();
         }
-    }); 
+    });
+    if (dateInput) {
+        observer.observe(dateInput, { attributes: true, childList: true, subtree: true });
+        dateInput.value = new Date().toLocaleDateString('en-CA');
+        janaStatistikDinamik();
+    }
+}); 
+
+        window.onclick = function(event) {
+    const modalKelas = document.getElementById('modal-pilih-kelas');
+    if (event.target == modalKelas) {
+        modalKelas.classList.add('hidden');
+    }
+}
     // Pastikan tiada lagi '});' atau ')' yang tertinggal di bawah sini
 </script>
 </body>
