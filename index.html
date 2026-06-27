@@ -393,28 +393,6 @@ function tukarTab(tab) {
             janaStatistikDinamik();
         }
 
-       document.getElementById('input-barcode').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        let kod = this.value.trim(); 
-        
-        // --- LOGIK PELAWAT ---
-        if (kod === "000000000000") {
-            document.getElementById('modal-pelawat').classList.remove('hidden');
-            setTimeout(() => {
-                document.getElementById('input-nama-pelawat').focus();
-            }, 300);
-            this.value = ""; 
-            return; 
-        }
-
-        // --- SISTEM ASAL CIKGU (KEKALKAN SEPERTI ASAL) ---
-        if (kod) { 
-            hantarKeSistem(kod); 
-            this.value = ''; 
-        }
-    }
-});
-
         function mulaKamera() {
             if (!html5QrcodeScanner) {
                 html5QrcodeScanner = new Html5Qrcode("reader", {
