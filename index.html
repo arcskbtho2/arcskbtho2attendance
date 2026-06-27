@@ -267,11 +267,23 @@ window.onload = function() {
         }
     }
 
-    function formatTarikhStandard(tarikhTeks) {
-        const parts = tarikhTeks.split('-');
-        if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
-        return tarikhTeks;
+   function formatTarikhStandard(tarikhMentah) {
+    if (!tarikhMentah) return "";
+    // 1. Buang ruang kosong dan tukar jadi string
+    let t = tarikhMentah.toString().trim();
+    
+    // 2. Pecahkan berdasarkan '-' atau '/'
+    let parts = t.split(/[-/]/); 
+    
+    if (parts.length === 3) {
+        // Jika format yyyy-mm-dd (dah betul), pulangkan terus
+        if (parts[0].length === 4) return t; 
+        
+        // Jika format dd-mm-yyyy, susun semula
+        return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
     }
+    return t;
+}
 
     function janaSenaraiKelas() {
         const darjah = [1, 2, 3, 4, 5, 6];
