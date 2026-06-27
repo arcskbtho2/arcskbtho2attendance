@@ -232,7 +232,7 @@
     <script>
 localStorage.clear();
     sessionStorage.clear();
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxLdQ9UJ_ltZ77_EQloKRcMrjOlIOkZEjFpeLKeu9r0LpB-5Vrus-JcAgZH6NwV_eKQqQ/exec"; 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby25spjSFfUKIMLX2Y9_wnYNdvfZEf21zl4GspTwKfYKKWKITQKoRKRzASVqrvB4Ct7sA/exec"; 
     let sudutSemasa = "Ruang Bacaan & Google TV"; 
     let html5QrcodeScanner = null;
     let modAnalisaSemasa = "hari"; 
@@ -516,17 +516,17 @@ function kiraTopPengunjungDinamik(data) {
     let kiraLelaki = {}, kiraPerempuan = {}, kiraGuru = {}, kiraKelas = {};
     
     data.forEach(item => {
-        if(!item.nama) return;
         let kat = (item.kategori || "").toString().toLowerCase().trim();
-        let nama = item.nama.trim();
-        let kelas = (item.kelas || "Tiada Kelas").trim();
+        let nama = (item.nama || "").trim();
+        let kelas = (item.kelas || "").trim();
         
         if (kat.includes('guru')) {
             kiraGuru[nama] = (kiraGuru[nama] || 0) + 1;
         } else {
-            if(kelas !== "-") kiraKelas[kelas] = (kiraKelas[kelas] || 0) + 1;
+            if(kelas && kelas !== "-") kiraKelas[kelas] = (kiraKelas[kelas] || 0) + 1;
             
             let n = nama.toLowerCase();
+            // Logik jantina
             if (n.includes('binti') || n.includes('bt') || n.includes('a/p')) {
                 kiraPerempuan[nama] = (kiraPerempuan[nama] || 0) + 1;
             } else {
