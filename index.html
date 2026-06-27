@@ -671,7 +671,7 @@ function janaStatistikDinamik() {
     const targetHari = document.getElementById('filter-tarikh').value;
     const bulanDipilih = document.getElementById('filter-bulan').value;
     
-    // 1. Logik Filter (JANGAN UBAH INI)
+    // 1. Logik Filter
     let filteredData = databaseSebenar.filter(item => {
         if (!item.tarikhTeks) return false;
         let tarikhItem = formatTarikhStandard(item.tarikhTeks);
@@ -688,17 +688,17 @@ function janaStatistikDinamik() {
     // 2. Kira Sudut Popular
     let kaunter = { "Ruang Bacaan & Google TV": 0, "Ruang Permainan Dalaman": 0, "Red spot": 0, "DBHOSS NovaTech": 0, "Sudut Komik": 0, "Ruang Pameran": 0, "Studio TVPSS": 0, "Bilik Tayang": 0, "PdPc/Nilam": 0, "Lawatan": 0 };
     filteredData.forEach(item => { if(kaunter.hasOwnProperty(item.sudut)) kaunter[item.sudut]++; });
-    let popular = Object.keys(kaunter).reduce((a, b) => kaunter[a] > kaunter[b] ? a : b);
-    document.getElementById('stat-popular').innerText = filteredData.length > 0 ? popular : "Tiada Data";
+    let popular = filteredData.length > 0 ? Object.keys(kaunter).reduce((a, b) => kaunter[a] > kaunter[b] ? a : b) : "Tiada Data";
+    document.getElementById('stat-popular').innerText = popular;
 
     kemasKiniCartaBar(kaunter);
     
+    // 3. Render Jadual (DIBETULKAN UNTUK 3 JADUAL)
     let dataMurid = filteredData.filter(r => !(r.kategori || "").toLowerCase().includes('guru') && !(r.kategori || "").toLowerCase().includes('pelawat'));
     let dataGuru = filteredData.filter(r => (r.kategori || "").toLowerCase().includes('guru'));
     let dataPelawat = filteredData.filter(r => (r.kategori || "").toLowerCase().includes('pelawat'));
 
     function janaBaris(data, warna, teks) {
-        if (data.length === 0) return `<tr><td colspan="5" class="p-4 text-center text-zinc-600 italic">Tiada rekod ${teks}</td></tr>`;
         return data.map(row => `
             <tr class="text-xs border-b border-zinc-800">
                 <td class="p-4">${row.masa}</td>
@@ -709,27 +709,22 @@ function janaStatistikDinamik() {
             </tr>`).join('');
     }
 
-  const elMurid = document.getElementById('log-table-murid');
-    const elGuru = document.getElementById('log-table-guru');
-    const elPelawat = document.getElementById('log-table-pelawat');
+    document.getElementById('log-table-murid').innerHTML = janaBaris(dataMurid, 'text-blue-400', 'MURID');
+    document.getElementById('log-table-guru').innerHTML = janaBaris(dataGuru, 'text-purple-400', 'GURU');
+    document.getElementById('log-table-pelawat').innerHTML = janaBaris(dataPelawat, 'text-orange-400', 'PELAWAT');
 
-    if(elMurid) elMurid.innerHTML = janaBaris(dataMurid, 'text-blue-400', 'MURID');
-    if(elGuru) elGuru.innerHTML = janaBaris(dataGuru, 'text-purple-400', 'GURU');
-    if(elPelawat) elPelawat.innerHTML = janaBaris(dataPelawat, 'text-orange-400', 'PELAWAT');
-    // 4. PANGGIL KIRAAN TOP PENGUNJUNG (PENTING!)
+    // 4. Panggilan Kiraan Top Pengunjung
     if (filteredData.length > 0) {
         kiraTopPengunjungDinamik(filteredData);
     } else {
-        // Reset jika tiada data
-        if(document.getElementById('top-lelaki-nama')) document.getElementById('top-lelaki-nama').innerText = "Tiada Data";
-        if(document.getElementById('top-perempuan-nama')) document.getElementById('top-perempuan-nama').innerText = "Tiada Data";
-        if(document.getElementById('top-guru-nama')) document.getElementById('top-guru-nama').innerText = "Tiada Data";
-        if(document.getElementById('stat-top-kelas')) document.getElementById('stat-top-kelas').innerText = "Tiada Data";
+        document.getElementById('top-lelaki-nama').innerText = "Tiada Data";
+        document.getElementById('top-perempuan-nama').innerText = "Tiada Data";
+        document.getElementById('top-guru-nama').innerText = "Tiada Data";
+        document.getElementById('stat-top-kelas').innerText = "Tiada Data";
     }
-         });
 }
 
-// --- FUNGSI CETAK LAPORAN ---
+// --- FUNGSI CETAK LAPORAN & LAIN-LAIN ---
 function cetakLaporanPDF(mod) {
     const originalTicksX = rujukanCartaBar.options.scales.x.ticks.color;
     const originalTicksY = rujukanCartaBar.options.scales.y.ticks.color;
@@ -755,23 +750,14 @@ function cetakLaporanPDF(mod) {
 
         const labels = rujukanCartaBar.data.labels;
         const dataValues = rujukanCartaBar.data.datasets[0].data;
-        let barisJadual = labels.map((label, i) => `<tr><td style="padding:10px; border:1px solid #333;">${label}</td><td style="padding:10px; border:1px solid #333; font-weight:bold; text-align:center;">${dataValues[i]} Murid</td></tr>`).join('');
-
-        let infoTambahan = (mod === 'bulan') ? `
-            <div style="margin-top: 20px; border-top: 1px solid #000; padding-top: 10px;">
-                <h3>🏅 Analisa Top Pengunjung</h3>
-                <p>👨‍🎓 Lelaki: <strong>${document.getElementById('top-lelaki-nama').innerText}</strong></p>
-                <p>👩‍🎓 Perempuan: <strong>${document.getElementById('top-perempuan-nama').innerText}</strong></p>
-                <p>👨‍🏫 Guru: <strong>${document.getElementById('top-guru-nama').innerText}</strong></p>
-            </div>` : "";
+        let barisJadual = labels.map((label, i) => `<tr><td style="padding:10px; border:1px solid #333;">${label}</td><td style="padding:10px; border:1px solid #333; font-weight:bold; text-align:center;">${dataValues[i]}</td></tr>`).join('');
 
         const printWindow = window.open('', '_blank');
-        printWindow.document.write(`<html><head><style>body{font-family:sans-serif; padding:40px; color:#000;} table{width:100%; border-collapse:collapse; margin-top:20px;} th, td{padding:10px; border:1px solid #333;}</style></head><body>
-            <h1 style="text-align:center; font-size:20px;">${tajukLaporan}</h1>
-            <img src="${dataUrlCarta}" style="width:100%; max-width:700px; display:block; margin:auto;">
-            ${infoTambahan}
-            <h3>Jadual Ringkasan Perincian:</h3>
-            <table><thead><tr><th>Sudut</th><th>Jumlah Kunjungan</th></tr></thead><tbody>${barisJadual}</tbody></table>
+        printWindow.document.write(`<html><head><style>body{font-family:sans-serif; padding:40px;} table{width:100%; border-collapse:collapse;} th, td{padding:10px; border:1px solid #333;}</style></head><body>
+            <h1 style="text-align:center;">${tajukLaporan}</h1>
+            <img src="${dataUrlCarta}" style="width:100%; max-width:600px; display:block; margin:auto;">
+            <h3>Jadual Ringkasan:</h3>
+            <table><thead><tr><th>Sudut</th><th>Jumlah</th></tr></thead><tbody>${barisJadual}</tbody></table>
             <script>window.print(); window.close();<\/script>
         </body></html>`);
 
@@ -782,60 +768,26 @@ function cetakLaporanPDF(mod) {
     }, 500);
 }
 
-// --- EVENT LISTENERS & MODAL ---
+// --- EVENT LISTENERS ---
 document.addEventListener('click', function(event) {
     const elemenManual = ['login-id', 'login-pass', 'select-kelas', 'filter-tarikh', 'filter-bulan', 'input-nama-pelawat', 'input-institusi-pelawat'];
-    
-    // Jika cikgu klik pada elemen manual, JANGAN buat apa-apa, biar keyboard/dropdown berfungsi
-    if (elemenManual.includes(event.target.id)) {
-        return;
-    }
-
-    // Jika cikgu klik di mana-mana ruang kosong, fokus ke input barcode
+    if (elemenManual.includes(event.target.id)) return;
     const inputBarcode = document.getElementById('input-barcode');
-    if (inputBarcode) {
-        inputBarcode.focus();
-    }
+    if (inputBarcode) inputBarcode.focus();
 });
 
-// Pastikan fokus tetap pada input-barcode untuk imbasan USB
 document.getElementById('input-barcode').addEventListener('blur', function(e) {
     const target = e.relatedTarget || document.activeElement;
+    const kotakTaip = ['login-id', 'login-pass', 'select-kelas', 'input-nama-pelawat', 'input-institusi-pelawat', 'filter-tarikh', 'filter-bulan'];
+    const modalBuka = !document.getElementById('modal-input-pelawat').classList.contains('hidden') || !document.getElementById('modal-pilih-kelas').classList.contains('hidden');
 
-    // Senarai ID yang kita tidak mahu ganggu
-    const kotakTaip = [
-        'login-id', 
-        'login-pass', 
-        'select-kelas', 
-        'input-nama-pelawat', 
-        'input-institusi-pelawat', 
-        'filter-tarikh', 
-        'filter-bulan'
-    ];
-
-    // Semak jika modal sedang terbuka
-    const modalBuka = !document.getElementById('modal-input-pelawat').classList.contains('hidden') || 
-                      !document.getElementById('modal-pilih-kelas').classList.contains('hidden');
-
-    // SYARAT: Jika target ada dalam senarai ATAU modal terbuka, JANGAN buat apa-apa
-    if ((target && kotakTaip.includes(target.id)) || modalBuka) {
-        return; 
-    }
-    
-    // Delay 200ms untuk tarik balik fokus (hanya jika modal tutup dan bukan sedang menaip)
-    setTimeout(() => {
-        document.getElementById('input-barcode').focus();
-    }, 200);
+    if ((target && kotakTaip.includes(target.id)) || modalBuka) return;
+    setTimeout(() => { document.getElementById('input-barcode').focus(); }, 200);
 });
 
-// Fungsi tutup modal kelas
 window.onclick = function(event) {
     const modalKelas = document.getElementById('modal-pilih-kelas');
-    if (event.target == modalKelas) {
-        modalKelas.classList.add('hidden');
-    }
+    if (event.target == modalKelas) modalKelas.classList.add('hidden');
 };
-
-// Tamat skrip
 </script>
 </body>
