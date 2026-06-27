@@ -516,21 +516,20 @@ function kiraTopPengunjungDinamik(data) {
     let kiraLelaki = {}, kiraPerempuan = {}, kiraGuru = {}, kiraKelas = {};
     
     data.forEach(item => {
-        // Ambil kategori dari data yang dihantar oleh doGet
-        let kat = (item.kategori || "").toString().toLowerCase().trim();
+        let kat = (item.kategori || "").toString().toLowerCase();
         let nama = (item.nama || "").trim();
         let kelas = (item.kelas || "").trim();
         
-        // Logik pengasingan mengikut kategori
+        // Memproses Guru
         if (kat.includes('guru')) {
             kiraGuru[nama] = (kiraGuru[nama] || 0) + 1;
         } else {
-            // Hanya kira kelas untuk murid
-            if (kelas && kelas !== "-" && kelas !== "Tiada Data") {
+            // Memproses Murid
+            if (kelas && kelas !== "Tiada Kelas") {
                 kiraKelas[kelas] = (kiraKelas[kelas] || 0) + 1;
             }
             
-            // Logik jantina murid
+            // Logik Jantina berdasarkan nama
             let n = nama.toLowerCase();
             if (n.includes('binti') || n.includes('bt') || n.includes('a/p')) {
                 kiraPerempuan[nama] = (kiraPerempuan[nama] || 0) + 1;
@@ -540,7 +539,7 @@ function kiraTopPengunjungDinamik(data) {
         }
     });
 
-    // Fungsi pembantu untuk mencari yang tertinggi
+    // Helper untuk mencari nilai tertinggi
     const getTop = (obj) => {
         let keys = Object.keys(obj);
         return keys.length > 0 ? keys.reduce((a, b) => obj[a] > obj[b] ? a : b) : "Tiada Data";
