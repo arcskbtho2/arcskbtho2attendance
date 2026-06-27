@@ -511,25 +511,32 @@ function logOut() {
     window.location.reload(); 
 }
 function kiraTopPengunjungDinamik(data) {
+    console.log("Data yang diterima untuk diproses:", data); // DEBUG: Cikgu boleh tengok data ini di Console (F12)
+    
+    if (!data || data.length === 0) {
+        console.warn("Tiada data untuk diproses!");
+        document.getElementById('top-lelaki-nama').innerText = "Tiada Data";
+        document.getElementById('top-perempuan-nama').innerText = "Tiada Data";
+        document.getElementById('top-guru-nama').innerText = "Tiada Data";
+        document.getElementById('stat-top-kelas').innerText = "Tiada Data";
+        return;
+    }
+
     let kiraLelaki = {}, kiraPerempuan = {}, kiraGuru = {}, kiraKelas = {};
     
     data.forEach(item => {
+        // Semak jika nama wujud
         if(!item.nama) return;
         
-        // 1. Kenal pasti kategori (Guru vs Murid)
         let kat = (item.kategori || "").toString().toLowerCase().trim();
-        let nama = (item.nama || "").trim();
-        let kelas = (item.kelas || "").trim();
+        let nama = item.nama.trim();
+        let kelas = (item.kelas || "Tiada Kelas").trim();
         
         if (kat.includes('guru')) {
             kiraGuru[nama] = (kiraGuru[nama] || 0) + 1;
         } else {
-            // Hanya kira kelas untuk murid
-            if (kelas && kelas !== "-") {
-                kiraKelas[kelas] = (kiraKelas[kelas] || 0) + 1;
-            }
+            kiraKelas[kelas] = (kiraKelas[kelas] || 0) + 1;
             
-            // 2. Logik Jantina Murid
             let n = nama.toLowerCase();
             if (n.includes('binti') || n.includes('bt') || n.includes('a/p')) {
                 kiraPerempuan[nama] = (kiraPerempuan[nama] || 0) + 1;
@@ -538,28 +545,25 @@ function kiraTopPengunjungDinamik(data) {
             }
         }
     });
-    
-    // Fungsi pembantu untuk cari yang tertinggi
-    const getTop = (obj) => Object.keys(obj).length > 0 ? Object.keys(obj).reduce((a, b) => obj[a] > obj[b] ? a : b) : null;
-    
-    // Update UI Lelaki
+
+    // Fungsi helper mencari yang tertinggi
+    const getTop = (obj) => {
+        let keys = Object.keys(obj);
+        return keys.length > 0 ? keys.reduce((a, b) => obj[a] > obj[b] ? a : b) : null;
+    };
+
+    // Update UI
     let topL = getTop(kiraLelaki);
-    document.getElementById('top-lelaki-nama').innerText = topL || "Tiada Data";
-    document.getElementById('top-lelaki-info').innerText = topL ? `${kiraLelaki[topL]} kali` : "-";
-
-    // Update UI Perempuan
+    document.getElementById('top-lelaki-nama').innerText = topL ? topL : "Tiada Data";
+    
     let topP = getTop(kiraPerempuan);
-    document.getElementById('top-perempuan-nama').innerText = topP || "Tiada Data";
-    document.getElementById('top-perempuan-info').innerText = topP ? `${kiraPerempuan[topP]} kali` : "-";
+    document.getElementById('top-perempuan-nama').innerText = topP ? topP : "Tiada Data";
 
-    // Update UI Guru
     let topG = getTop(kiraGuru);
-    document.getElementById('top-guru-nama').innerText = topG || "Tiada Data";
-    document.getElementById('top-guru-info').innerText = topG ? `${kiraGuru[topG]} kunjungan` : "-";
+    document.getElementById('top-guru-nama').innerText = topG ? topG : "Tiada Data";
 
-    // Update Kelas Aktif
     let topK = getTop(kiraKelas);
-    document.getElementById('stat-top-kelas').innerText = topK || "Tiada Data";
+    document.getElementById('stat-top-kelas').innerText = topK ? topK : "Tiada Data";
 }
         // FUNGSI CARTA YANG TELAH DIKEMAS KINI DENGAN JUMLAH DAN PERATUS (%) DENGAN PLUGIN DATALABELS
 // 1. KEMASKINI CARTA: Menggunakan ejaan "Murid" penuh
