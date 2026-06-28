@@ -542,9 +542,18 @@ function hantarKeSistem(barcode) {
     if (isScanning) return;
     isScanning = true;
 
-    let barcodeBersih = barcode.toString().trim().replace(/\s+/g, '');
-    if (!barcodeBersih) { 
+    // KITA CUCI HABIS-HABISAN DI SINI:
+    // 1. Buang semua karakter pelik. 
+    // 2. Ambil hanya nombor (0-9) sahaja.
+    let barcodeBersih = barcode.toString().replace(/[^0-9]/g, '');
+
+    // DEBUG: Tengok apa yang kamera nampak dalam Console
+    console.log("Input Kamera:", barcode);
+    console.log("Selepas dicuci (Barcode Bersih):", barcodeBersih);
+
+    if (!barcodeBersih || barcodeBersih.length < 5) { 
         isScanning = false; 
+        paparNotifikasi("Kod tidak sah!", 'error');
         return; 
     }
 
@@ -559,7 +568,7 @@ function hantarKeSistem(barcode) {
         isScanning = false;
     } 
     else {
-        paparNotifikasi(`Memproses ${barcodeBersih}...`, 'info');
+        paparNotifikasi("Memproses " + barcodeBersih + "...", 'info');
         prosesHantarKeServer(barcodeBersih, "");
     }
 }
