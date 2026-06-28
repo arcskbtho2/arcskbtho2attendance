@@ -484,37 +484,28 @@ function simpanDataPelawat() {
         });
 
 function mulaKamera() {
-    // TAMBAHAN: Kalau kamera tengah jalan, jangan buat apa-apa
-    if (html5QrcodeScanner && html5QrcodeScanner.isScanning) return; 
-
-    if (!html5QrcodeScanner) {
-        html5QrcodeScanner = new Html5Qrcode("reader", {
-            // SAYA TAMBAHKAN EAN_13 (PENTING UNTUK BUKU PSS)
-            formatsToSupport: [ 
-                Html5QrcodeSupportedFormats.QR_CODE, 
-                Html5QrcodeSupportedFormats.CODE_128, 
-                Html5QrcodeSupportedFormats.CODE_39,
-                Html5QrcodeSupportedFormats.EAN_13 
-            ]
-        });
+    // 1. Bersihkan kamera lama jika ada
+    if (html5QrcodeScanner) {
+        html5QrcodeScanner.clear().catch(err => console.log("Clear error:", err));
     }
+
+    // 2. Setup kamera baru
+    html5QrcodeScanner = new Html5Qrcode("reader");
     
-    isScanning = false; 
+    // 3. Mula mengimbas
     html5QrcodeScanner.start(
         { facingMode: "environment" }, 
-        // QRBOX DITUKAR KEPADA SAIZ TETAP (LEBIH MUDAH DETECT)
-        { fps: 10, qrbox: { width: 250, height: 150 } },
+        { fps: 10, qrbox: 250 },
         (text) => { 
-            if (isScanning) return; 
-            isScanning = true; 
+            // Terus hantar ke fungsi asal cikgu
             hantarKeSistem(text); 
-            // Tambah cooldown 2 saat supaya tak "double scan"
-            setTimeout(() => { isScanning = false; }, 2000);
         },
-        (errorMessage) => { 
-            // Abaikan error "NotFound" supaya console tak penuh
+        (err) => { 
+            // Abaikan error "Not Found" supaya konsol bersih
         }
-    ).catch(err => alert("Kamera gagal diakses: " + err));
+    ).catch(err => {
+        alert("Kamera tidak dapat dibuka. Sila beri kebenaran akses kamera.");
+    });
 }
 
         function hentikanKamera() {
