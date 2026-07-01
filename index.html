@@ -740,22 +740,31 @@ function janaStatistikDinamik() {
     const targetHari = document.getElementById('filter-tarikh').value; // Ini format yyyy-mm-dd
     const bulanDipilih = document.getElementById('filter-bulan').value; // Ini 0-11
     
-    // 1. Logik Filter yang Dikuatkan
-    let filteredData = databaseSebenar.filter(item => {
-        if (!item.tarikhTeks) return false;
-        
-        // Tukar tarikh dari sheet (dd-mm-yyyy) kepada format perbandingan (yyyy-mm-dd)
-        let parts = item.tarikhTeks.split('-'); 
-        let tarikhFormatStandard = `${parts[2]}-${parts[1]}-${parts[0]}`; // Hasil: yyyy-mm-dd
-        
-        if (modAnalisaSemasa === 'hari') {
-            return tarikhFormatStandard === targetHari;
-        } else {
-            // Bandingkan bulan (ambil bahagian tengah: mm)
-            let bulanItem = parseInt(parts[1]) - 1; // Tukar ke 0-11
-            return bulanItem == bulanDipilih;
-        }
-    });
+// Gantikan bahagian let filteredData = ... sampai habis dalam fungsi janaStatistikDinamik
+let filteredData = databaseSebenar.filter(item => {
+    if (!item.tarikhTeks) return false;
+    
+    // Pecahkan tarikh daripada sheet
+    let parts = item.tarikhTeks.split('-'); // Format dari sheet: MM-DD-YYYY atau DD-MM-YYYY
+    
+    // Kita buat logic "Teka": Kalau bahagian pertama > 12, maksudnya itu HARI. 
+    // Kalau bahagian pertama <= 12, kita kena berhati-hati.
+    // Tapi untuk kes cikgu (07-01), kita tahu 07 adalah bulan.
+    
+    let bulanItem = parseInt(parts[0]); // Ambil bahagian pertama
+    let hariItem = parseInt(parts[1]);  // Ambil bahagian kedua
+    let tahunItem = parseInt(parts[2]);
+
+    if (modAnalisaSemasa === 'hari') {
+        // Bandingkan dengan targetHari (yyyy-mm-dd)
+        // Kita bina balik tarikh "yyyy-mm-dd" ikut susunan sheet cikgu
+        let tarikhItemStandard = `${tahunItem}-${String(bulanItem).padStart(2, '0')}-${String(hariItem).padStart(2, '0')}`;
+        return tarikhItemStandard === targetHari;
+    } else {
+        // Bandingkan bulan (0-11)
+        return (bulanItem - 1) == bulanDipilih;
+    }
+});
 
     // ... (Kod seterusnya biarkan sama seperti asal)
     document.getElementById('stat-total').innerText = filteredData.length;
