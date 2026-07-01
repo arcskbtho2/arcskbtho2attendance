@@ -737,21 +737,27 @@ function kiraTopPengunjungDinamik(data) {
         });
     }
 function janaStatistikDinamik() {
-    const targetHari = document.getElementById('filter-tarikh').value;
-    const bulanDipilih = document.getElementById('filter-bulan').value;
+    const targetHari = document.getElementById('filter-tarikh').value; // Ini format yyyy-mm-dd
+    const bulanDipilih = document.getElementById('filter-bulan').value; // Ini 0-11
     
-    // 1. Logik Filter
+    // 1. Logik Filter yang Dikuatkan
     let filteredData = databaseSebenar.filter(item => {
         if (!item.tarikhTeks) return false;
-        let tarikhItem = formatTarikhStandard(item.tarikhTeks);
+        
+        // Tukar tarikh dari sheet (dd-mm-yyyy) kepada format perbandingan (yyyy-mm-dd)
+        let parts = item.tarikhTeks.split('-'); 
+        let tarikhFormatStandard = `${parts[2]}-${parts[1]}-${parts[0]}`; // Hasil: yyyy-mm-dd
+        
         if (modAnalisaSemasa === 'hari') {
-            return tarikhItem === targetHari;
+            return tarikhFormatStandard === targetHari;
         } else {
-            let targetBulan = String(parseInt(bulanDipilih) + 1).padStart(2, '0');
-            return tarikhItem.split('-')[1] === targetBulan;
+            // Bandingkan bulan (ambil bahagian tengah: mm)
+            let bulanItem = parseInt(parts[1]) - 1; // Tukar ke 0-11
+            return bulanItem == bulanDipilih;
         }
     });
 
+    // ... (Kod seterusnya biarkan sama seperti asal)
     document.getElementById('stat-total').innerText = filteredData.length;
     
     // 2. Kira Sudut Popular
@@ -761,7 +767,7 @@ function janaStatistikDinamik() {
     document.getElementById('stat-popular').innerText = popular;
 
     kemasKiniCartaBar(kaunter);
-    
+    // ... (rest of your code)
     // 3. Render Jadual (DIBETULKAN UNTUK 3 JADUAL)
     let dataMurid = filteredData.filter(r => !(r.kategori || "").toLowerCase().includes('guru') && !(r.kategori || "").toLowerCase().includes('pelawat'));
     let dataGuru = filteredData.filter(r => (r.kategori || "").toLowerCase().includes('guru'));
