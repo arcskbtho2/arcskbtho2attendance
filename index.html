@@ -770,7 +770,7 @@ let filteredData = databaseSebenar.filter(item => {
     document.getElementById('stat-total').innerText = filteredData.length;
     
     // 2. Kira Sudut Popular
-    let kaunter = { "Ruang Bacaan & Google TV": 0, "Ruang Permainan Dalaman": 0, "Red spot": 0, "DBHOSS NovaTech": 0, "Sudut Komik": 0, "Ruang Pameran": 0, "Studio TVPSS": 0, "Mesyuarat/Taklimat": 0, "PdPc/Bilik Tayang/Nilam": 0, "Lawatan": 0 };
+    let kaunter = { "Ruang Bacaan & Google TV": 0, "Ruang Permainan Dalaman": 0, "Red spot": 0, "DBHOSS NovaTech": 0, "Sudut Komik": 0, "Ruang Pameran": 0, "Studio TVPSS": 0, "Mesyuarat/Taklimat/Latihan": 0, "PdPc/Bilik Tayang/Nilam": 0, "Lawatan": 0 };
     filteredData.forEach(item => { if(kaunter.hasOwnProperty(item.sudut)) kaunter[item.sudut]++; });
     let popular = filteredData.length > 0 ? Object.keys(kaunter).reduce((a, b) => kaunter[a] > kaunter[b] ? a : b) : "Tiada Data";
     document.getElementById('stat-popular').innerText = popular;
